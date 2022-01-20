@@ -20,9 +20,6 @@ using namespace std;
 #define RED "\033[91m"
 #define GRA "\033[0m"
 
-// int gcd(int a, int b){
-
-// }
 
 struct point{
 
