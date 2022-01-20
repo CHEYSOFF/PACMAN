@@ -7,6 +7,8 @@
 #include <string>
 #include <queue>
 #include <algorithm>
+#include <atomic>
+
 using namespace std;
 
 
@@ -119,7 +121,7 @@ void updateScreen(){
 }
 
 int death;//1 съеден монстром || -1 лив || 0 жив
-bool gameContinue = true;
+static atomic< bool > gameContinue = true;
 void goup(){
     
 
@@ -359,6 +361,7 @@ void character(){
         Sleep(400);
         // BlockInput(false);
         // SetConsoleMode(GetStdHandle(STD_INPUT_HANDLE) ,ENABLE_ECHO_INPUT);
+        if (!gameContinue.is_lock_free()) return;
     }
     return;
 }
@@ -377,6 +380,7 @@ void door_time(){
         // updateScreen();
         Sleep(10000);
 
+        if (!gameContinue.is_lock_free()) return;
 
 
     }
@@ -386,6 +390,7 @@ void scr_upd_tim(){
     while(gameContinue){
         updateScreen();
         Sleep(100);
+        if (!gameContinue.is_lock_free()) return;
     }
 }
 
@@ -421,8 +426,11 @@ void input_key(){
                 case 27:
                     gameContinue=0;
                     death=-1;
-                    return;
+                    break;
+                    // return;
             }
+
+            if (!gameContinue.is_lock_free()) return;
 
     }
 }
@@ -431,8 +439,9 @@ void input_key(){
 void leave(){
     
     system("cls");
-    cout<<"YOUR SCORE="<<curscore;
-
+    cout<<"GAME OVER\n";;
+    cout<<"YOUR SCORE="<<curscore<<'\n';
+    cout<<flush;
 
 }
 
@@ -461,13 +470,13 @@ int main(){
     ShowScrollBar(hwnd, SB_BOTH, 0);
     RECT ConsoleRect;
     GetWindowRect(hwnd, &ConsoleRect);
-    MoveWindow(hwnd, ConsoleRect.left, ConsoleRect.top, 470, 560, TRUE);
+    MoveWindow(hwnd, ConsoleRect.left, ConsoleRect.top, 470, 570, TRUE);
     // cin.sync();
     
     // cout<<'\n';
 
     int lives=3;
-
+    if (!gameContinue.is_lock_free()) return 10;
     while(lives!=0){
         system("cls");
         cout<<flush;
@@ -493,10 +502,10 @@ int main(){
 
 
 
-        inp.detach();
-        screen.detach();
-        door.detach();
-        cha.detach();
+        // inp.detach();
+        // screen.detach();
+        // door.detach();
+        // cha.detach();
 
 
 
