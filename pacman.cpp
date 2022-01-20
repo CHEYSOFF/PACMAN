@@ -483,7 +483,7 @@ int main(){
         death=0;
         monster_pos.clear();
         gam.i=1;
-        gam.j=1;
+        gam.j=1; 
         
         point p;
         p.i=14;
