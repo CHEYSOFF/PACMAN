@@ -20,6 +20,10 @@ using namespace std;
 #define RED "\033[91m"
 #define GRA "\033[0m"
 
+// int gcd(int a, int b){
+
+// }
+
 struct point{
 
     int i, j;
@@ -161,7 +165,7 @@ void updateScreen(){
     cout<<flush;
 }
 
-int death;//1 съеден монстром || -1 лив || 0 жив
+atomic< int > death;//1 съеден монстром || -1 лив || 0 жив
 static atomic< bool > gameContinue = true;
 void goup(){
     
@@ -365,9 +369,10 @@ void mon_left(int &dir){
 
 }
 
-atomic< int > dop=2000;
-atomic< int > dcl=20000;
+const int dop=2000;
+const int dcl=20000;
 atomic< int > curtime=0;
+const int cycle=dop+dcl;
 const int wait_ghost=400;
 const int wait_gamer=300;
 
@@ -377,7 +382,7 @@ void mon_thr(){
     int m_l_dir=0;//0 вверх | 1 вправо | 2 вниз | 3 влево
     while(gameContinue){
         
-        if(curtime >= (dop+dcl)*0 ){
+        if(curtime >= (cycle)*0 ){
             if( !monplaced[1] ){
                 fi_mon.i=14;
                 fi_mon.j=12;
@@ -387,7 +392,7 @@ void mon_thr(){
             mon_bfs();
         }
         
-        if(curtime >= (dop+dcl)*1 ){
+        if(curtime >= (cycle)*1 ){
 
             if( !monplaced[2] ){
                 se_mon.i=14;
@@ -471,7 +476,7 @@ void character(){
         Sleep(wait_gamer);
         // BlockInput(false);
         // SetConsoleMode(GetStdHandle(STD_INPUT_HANDLE) ,ENABLE_ECHO_INPUT);
-        if (!gameContinue.is_lock_free()) return;
+        // if (!gameContinue.is_lock_free()) return;
     }
     return;
 }
@@ -485,15 +490,15 @@ void door_time(){
         // door=0;
         // updateScreen();
         Sleep(dop);
-        curtime+=dop;
+        if(curtime<cycle*3) curtime+=dop;
         
         // door=1;
         dclose();
         // updateScreen();
         Sleep(dcl);
-        curtime+=dcl;
+        if(curtime<cycle*3) curtime+=dcl;
 
-        if (!gameContinue.is_lock_free()) return;
+        // if (!gameContinue.is_lock_free()) return;
 
 
     }
@@ -502,8 +507,8 @@ void door_time(){
 void scr_upd_tim(){
     while(gameContinue){
         updateScreen();
-        Sleep(100);
-        if (!gameContinue.is_lock_free()) return;
+        // Sleep(10);
+        // if (!gameContinue.is_lock_free()) return;
     }
 }
 
@@ -543,7 +548,7 @@ void input_key(){
                     // return;
             }
 
-            if (!gameContinue.is_lock_free()) return;
+            // if (!gameContinue.is_lock_free()) return;
 
     }
 }
@@ -555,6 +560,23 @@ void leave(){
     cout<<"GAME OVER\n";;
     cout<<"YOUR SCORE="<<curscore<<'\n';
     cout<<flush;
+
+}
+
+
+void threads_begin(){
+
+    thread cha(character);
+    thread inp(input_key);
+    thread door(door_time);
+    thread screen(scr_upd_tim);
+    thread mon(mon_thr);
+
+    screen.join();
+    door.detach();
+    cha.detach();
+    inp.detach();
+    mon.detach();
 
 }
 
@@ -590,30 +612,28 @@ int main(){
     // cout<<'\n';
 
     int lives=3;
-    if (!gameContinue.is_lock_free()) return 10;
+    // if (!gameContinue.is_lock_free()) return 10;
+
+    
     while(lives!=0){
-        
+        gam.i=1;
+        gam.j=1;
+        curtime=0;
+        gameContinue=1;
         fi_mon=u;
         se_mon=u;
         system("cls");
         cout<<flush;
+        updateScreen();
         death=0;
         gam.i=1;
         gam.j=1; 
         
         
-
-        thread cha(character);
-        thread inp(input_key);
-        thread door(door_time);
-        thread screen(scr_upd_tim);
-        thread mon(mon_thr);
-
-        screen.join();
-        door.join();
-        cha.join();
-        inp.join();
-        mon.join();
+        threads_begin();
+        arr[gam.i][gam.j]=0;
+        
+        cout<<"LIVEs="<<lives<<endl;
 
 
         // inp.detach();
@@ -622,12 +642,18 @@ int main(){
         // cha.detach();
 
 
+        cout<<death<<endl;
+
+        Sleep(10000);
 
         if(death==-1){
             break;
         }
 
         lives--;
+
+        cout<<"YOU DIED\n";
+        cout<<"Lives left: "<<lives<<'\n';
 
 
     }
