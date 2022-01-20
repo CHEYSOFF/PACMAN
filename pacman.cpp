@@ -41,6 +41,11 @@ point operator-(point a, point b){
 bool operator==(point a, point b){
     return (a.i==b.i && a.j==b.j);
 }
+bool operator!=(point a, point b){
+    return (a.i!=b.i || a.j!=b.j);
+}
+
+point u;
 
 
 // bool door=1;//0 открыта 1 закрыта
@@ -97,7 +102,10 @@ bool cango(point p){
 //         int y_pos;
 // };
 
-vector< point > monster_pos;
+point fi_mon;
+point se_mon;
+
+// vector< point > monster_pos;
 
 void updateScreen(){
     int i, j;
@@ -117,13 +125,23 @@ void updateScreen(){
             point curpo;
             curpo.i=i;
             curpo.j=j;
-            for(int mon_num=0; mon_num<monster_pos.size(); mon_num++){
-                if(monster_pos[mon_num]==curpo){
-                    cout<<CYA<<"@"<<" ";
-                    ghost=1;
-                    break;
-                }
+            if(fi_mon!=u && fi_mon==curpo){
+                cout<<CYA<<"@"<<" ";
+                ghost=1;
+                continue;
             }
+            else if(se_mon!=u && se_mon==curpo){
+                cout<<BLU<<"@"<<" ";
+                ghost=1;
+                continue;
+            }
+            // for(int mon_num=0; mon_num<monster_pos.size(); mon_num++){
+            //     if(monster_pos[mon_num]==curpo){
+            //         cout<<CYA<<"@"<<" ";
+            //         ghost=1;
+            //         break;
+            //     }
+            // }
             if(!ghost){
 
 
@@ -227,22 +245,21 @@ bool valid(point a){
     else return 0; 
 }
 
-point fix(point a){
-    if(a.j==-(wi-1)) a.j=1;
-    else if(a.j==(wi-1) ) a.j=-1;
-    return a;
-}
+// point fix(point a){
+//     if(a.j==-(wi-1)) a.j=1;
+//     else if(a.j==(wi-1) ) a.j=-1;
+//     return a;
+// }
 
 
 point fastest_way(point s, point e){
     queue< point > q;
     q.push (s);
-    point u;
-    u.i=0;
-    u.j=0;
-    if(s==e) return u;
-    u.i=-1;
-    u.j=-1;
+    point tmp_p;
+    tmp_p.i=0;
+    tmp_p.j=0;
+    if(s==e) return tmp_p;
+    
     vector< vector<point> > used(he, vector< point >(wi, u) );
     
     // used[s.i][s.j]=0;
@@ -320,39 +337,68 @@ point fastest_way(point s, point e){
 }
 
 
-void monsters(){
+void mon_bfs(){
 
-    for(int monind=0; monind<monster_pos.size(); monind++ ){
-        point mon_dir=fastest_way(monster_pos[monind], gam );
-        point u;
-        u.i=-1;
-        u.j=-1;
-        if(mon_dir==u){
-            continue;
-        }
-        point newpos=monster_pos[monind]+mon_dir;
-        monster_pos[monind]=newpos;
-        if( newpos==gam ){
-            gameContinue=0;
-            death=1;
-
-            
-            return;
-        }
+    point mon_dir=fastest_way(fi_mon, gam );
+    if(mon_dir==u){
+        return;
     }
+    point newpos=fi_mon+mon_dir;
+    fi_mon=newpos;
+    if( newpos==gam ){
+        gameContinue=0;
+        death=1;
+
+        
+        return;
+    }
+    
 
 }
 
+
+void mon_left(int &dir){
+    
+    
+    // point next=next_point(dir)
+
+
+}
+
+atomic< int > dop=2000;
+atomic< int > dcl=20000;
+atomic< int > curtime=0;
 const int wait_ghost=400;
 const int wait_gamer=300;
 
 void mon_thr(){
-
-
+    vector< bool > monplaced(3, 0);
+    // bool mon2placed=0;
+    int m_l_dir=0;//0 вверх | 1 вправо | 2 вниз | 3 влево
     while(gameContinue){
+        
+        if(curtime >= (dop+dcl)*0 ){
+            if( !monplaced[1] ){
+                fi_mon.i=14;
+                fi_mon.j=12;
 
-        monsters();
+            }
+            monplaced[1]=1;
+            mon_bfs();
+        }
+        
+        if(curtime >= (dop+dcl)*1 ){
+
+            if( !monplaced[2] ){
+                se_mon.i=14;
+                se_mon.j=11;
+
+            }
+            monplaced[2]=1;
+            mon_left(m_l_dir); 
+        } 
         Sleep(wait_ghost);
+        
 
     }
 
@@ -431,18 +477,21 @@ void character(){
 }
 
 
+
 void door_time(){
     while(gameContinue){
 
         dopen();
         // door=0;
         // updateScreen();
-        Sleep(10000);
+        Sleep(dop);
+        curtime+=dop;
         
         // door=1;
         dclose();
         // updateScreen();
-        Sleep(10000);
+        Sleep(dcl);
+        curtime+=dcl;
 
         if (!gameContinue.is_lock_free()) return;
 
@@ -517,7 +566,8 @@ int main(){
     cin.tie(0);
     srand(time(NULL));
     
-
+    u.i=-1;
+    u.j=-1;
 
     HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
     CONSOLE_SCREEN_BUFFER_INFO scrBufferInfo;
@@ -542,17 +592,16 @@ int main(){
     int lives=3;
     if (!gameContinue.is_lock_free()) return 10;
     while(lives!=0){
+        
+        fi_mon=u;
+        se_mon=u;
         system("cls");
         cout<<flush;
         death=0;
-        monster_pos.clear();
         gam.i=1;
         gam.j=1; 
         
-        point p;
-        p.i=14;
-        p.j=12;
-        monster_pos.push_back(p);
+        
 
         thread cha(character);
         thread inp(input_key);
