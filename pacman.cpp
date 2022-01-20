@@ -357,17 +357,70 @@ void mon_bfs(){
 
 }
 
+point next_point(int dir){
+    point x;
+    switch (dir){
+
+        case 0:
+            x.i=-1;
+            x.j=0;
+            break;
+        case 1:
+            x.i=0;
+            x.j=1;
+            break;
+        case 2:
+            x.i=1;
+            x.j=0;
+            break;
+        case 3:
+            x.i=0;
+            x.j=-1;
+            break;
+
+
+
+    }
+    return x;
+}
+
+bool sec_mon_valid(point p){
+    if( valid(p) && !(p.i==14 && ( p.j==5 || p.j==22 )) && !(p.i==4 && (p.j==6 || p.j==21) ) && !(p.i==5 && (p.j==5 || p.j==22) ) ) return 1;
+    return 0;
+}
 
 void mon_left(int &dir){
     
     
-    // point next=next_point(dir)
+    point next=se_mon + next_point(dir);
+    if( !sec_mon_valid(next) ){
+        dir=(dir-1+4)%4; 
+        next=se_mon + next_point(dir);
+        if(!sec_mon_valid(next)){
+            dir=(dir+2+4)%4; 
+        }
+    }
+    
+    
+
+
+    next=se_mon + next_point(dir);
+
+    se_mon=next;
+    if(se_mon==gam){
+        gameContinue=0;
+        death=1;
+
+        
+        return;
+    }
+    
 
 
 }
 
 const int dop=2000;
-const int dcl=20000;
+const int dcl=2000;
 atomic< int > curtime=0;
 const int cycle=dop+dcl;
 const int wait_ghost=400;
@@ -397,7 +450,8 @@ void mon_thr(){
 
             }
             monplaced[2]=1;
-            mon_left(m_l_dir); 
+            mon_left(m_l_dir);
+            
         } 
         Sleep(wait_ghost);
         
