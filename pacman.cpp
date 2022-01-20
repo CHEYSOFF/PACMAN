@@ -295,7 +295,7 @@ point fastest_way(point s, point e){
                         if(nev==u) return u;
                         
                         if(used[nev.i][nev.j]==s){
-                            point ans=fix(nev-s);
+                            point ans=nev-s;
                             return(ans);
                         }
 
@@ -324,7 +324,14 @@ void monsters(){
 
     for(int monind=0; monind<monster_pos.size(); monind++ ){
         point mon_dir=fastest_way(monster_pos[monind], gam );
+        point u;
+        u.i=-1;
+        u.j=-1;
+        if(mon_dir==u){
+            continue;
+        }
         point newpos=monster_pos[monind]+mon_dir;
+        monster_pos[monind]=newpos;
         if( newpos==gam ){
             gameContinue=0;
             death=1;
@@ -332,6 +339,21 @@ void monsters(){
             
             return;
         }
+    }
+
+}
+
+const int wait_ghost=400;
+const int wait_gamer=300;
+
+void mon_thr(){
+
+
+    while(gameContinue){
+
+        monsters();
+        Sleep(wait_ghost);
+
     }
 
 }
@@ -400,7 +422,7 @@ void character(){
         // updateScreen();
         // SetConsoleMode(GetStdHandle(STD_INPUT_HANDLE) ,ENABLE_ECHO_INPUT);
         // BlockInput(true);
-        Sleep(400);
+        Sleep(wait_gamer);
         // BlockInput(false);
         // SetConsoleMode(GetStdHandle(STD_INPUT_HANDLE) ,ENABLE_ECHO_INPUT);
         if (!gameContinue.is_lock_free()) return;
@@ -536,12 +558,13 @@ int main(){
         thread inp(input_key);
         thread door(door_time);
         thread screen(scr_upd_tim);
+        thread mon(mon_thr);
 
         screen.join();
         door.join();
         cha.join();
         inp.join();
-
+        mon.join();
 
 
         // inp.detach();
