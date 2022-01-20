@@ -84,6 +84,11 @@ int arr[he][wi]={   {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 point gam;
 
 
+bool cango(point p){
+    if( (arr[p.i][p.j]!=1 && !(p.i==12 && p.j>=11 && p.j<=16) ) || (p.i==14 && ( p.j==-1 || p.j==wi )  ) ) return true;
+    return false;
+}
+
 
 
 // class Monster{
@@ -108,9 +113,27 @@ void updateScreen(){
     for(i=0;i<he;i++){
         cout<<"   ";
         for(j=0;j<wi;j++){
-            if(arr[i][j]==5) cout<<YEL<<"C"<<" ";
-            else if(arr[i][j]==0) cout<<GRA<<"."<<" ";
-            else if(arr[i][j]==1) cout<<PUR<<"H"<<" ";
+            bool ghost=0;
+            point curpo;
+            curpo.i=i;
+            curpo.j=j;
+            for(int mon_num=0; mon_num<monster_pos.size(); mon_num++){
+                if(monster_pos[mon_num]==curpo){
+                    cout<<CYA<<"@"<<" ";
+                    ghost=1;
+                    break;
+                }
+            }
+            if(!ghost){
+
+
+                if(arr[i][j]==5) cout<<YEL<<"C"<<" ";
+                else if(arr[i][j]==0) cout<<GRA<<"."<<" ";
+                else if(arr[i][j]==1) cout<<PUR<<"H"<<" "; 
+
+
+            }
+            
             
         }
         // cout<<"                       ";
@@ -124,8 +147,9 @@ int death;//1 съеден монстром || -1 лив || 0 жив
 static atomic< bool > gameContinue = true;
 void goup(){
     
-
-    if(arr[gam.i-1][gam.j]==0){
+    point p=gam;
+    p.i--;
+    if( cango(p) ){
         arr[gam.i][gam.j]= 0;
         arr[gam.i-1][gam.j]= 5;
         gam.i--;
@@ -137,8 +161,9 @@ void goup(){
 }
 
 void godown(){
-    if(gam.i==11 && gam.j>=11 && gam.j<=16) return;
-    if(arr[gam.i+1][gam.j]==0){
+    point p=gam;
+    p.i++;
+    if(cango(p) ){
         arr[gam.i][gam.j]= 0;
         arr[gam.i+1][gam.j]= 5;
         gam.i++;
@@ -148,37 +173,53 @@ void godown(){
 }
 
 void goleft(){
-    if(gam.i==14 && gam.j==0){
-        arr[gam.i][gam.j]= 0;
-        arr[gam.i][wi-1]= 5;
-        gam.j=wi-1;
-        return;
-    }
+    point p=gam;
+    p.j--;
+    if(cango( p ) ){
 
-
-    if(arr[gam.i][gam.j-1]==0){
+        if(gam.i==14 && gam.j==0){
+            arr[gam.i][gam.j]= 0;
+            arr[gam.i][wi-1]= 5;
+            gam.j=wi-1;
+            return;
+        }
+        
         arr[gam.i][gam.j]= 0;
         arr[gam.i][gam.j-1]= 5;
         gam.j--;
         return;
     }
+    
+
+
+    
 }
 
 void goright(){
-    if(gam.i==14 && gam.j==wi-1){
-        arr[gam.i][gam.j]= 0;
-        arr[gam.i][0]= 5;
-        gam.j=0;
-        return;
-    }
 
+    point p=gam;
+    p.j++;
 
-    if(arr[gam.i][gam.j+1]==0){
+    if(cango( p ) ){
+        if(gam.i==14 && gam.j==wi-1){
+            arr[gam.i][gam.j]= 0;
+            arr[gam.i][0]= 5;
+            gam.j=0;
+            return;
+        }
+
         arr[gam.i][gam.j]= 0;
         arr[gam.i][gam.j+1]= 5;
         gam.j++;
         return;
+
+
     }
+
+    
+
+
+    
 }
 
 bool valid(point a){
@@ -187,7 +228,8 @@ bool valid(point a){
 }
 
 point fix(point a){
-    if(a.j==-27) a.j=1;
+    if(a.j==-(wi-1)) a.j=1;
+    else if(a.j==(wi-1) ) a.j=-1;
     return a;
 }
 
