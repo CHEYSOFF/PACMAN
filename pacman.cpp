@@ -55,7 +55,7 @@ int curscore=0;
 const int he = 31;//26
 const int wi = 28;//26
 int arr[he][wi]={   {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-                    {1, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
                     {1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1},
                     {1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1},
                     {1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1},
@@ -122,32 +122,36 @@ void updateScreen(){
     for(i=0;i<he;i++){
         cout<<"   ";
         for(j=0;j<wi;j++){
-            bool ghost=0;
+            bool outed=0;
             point curpo;
             curpo.i=i;
             curpo.j=j;
             if(fi_mon!=u && fi_mon==curpo){
                 cout<<CYA<<"@"<<" ";
-                ghost=1;
+                outed=1;
                 continue;
             }
             else if(se_mon!=u && se_mon==curpo){
                 cout<<BLU<<"@"<<" ";
-                ghost=1;
+                outed=1;
+                continue;
+            }
+            else if(gam==curpo){
+                cout<<YEL<<"C"<<" ";
+                outed=1;
                 continue;
             }
             // for(int mon_num=0; mon_num<monster_pos.size(); mon_num++){
             //     if(monster_pos[mon_num]==curpo){
             //         cout<<CYA<<"@"<<" ";
-            //         ghost=1;
+            //         outed=1;
             //         break;
             //     }
             // }
-            if(!ghost){
+            if(!outed){
 
 
-                if(arr[i][j]==5) cout<<YEL<<"C"<<" ";
-                else if(arr[i][j]==0) cout<<GRA<<"."<<" ";
+                if(arr[i][j]==0) cout<<GRA<<"."<<" ";
                 else if(arr[i][j]==1) cout<<PUR<<"H"<<" "; 
 
 
@@ -162,6 +166,12 @@ void updateScreen(){
     cout<<flush;
 }
 
+// void addScore(point p){
+//     if(arr[p.i][p.j]==2){
+//         curscore;
+//     }
+// }
+
 atomic< int > death;//1 съеден монстром || -1 лив || 0 жив
 static atomic< bool > gameContinue = true;
 void goup(){
@@ -169,8 +179,8 @@ void goup(){
     point p=gam;
     p.i--;
     if( cango(p) ){
-        arr[gam.i][gam.j]= 0;
-        arr[gam.i-1][gam.j]= 5;
+        
+        
         gam.i--;
         return;
     }
@@ -183,8 +193,7 @@ void godown(){
     point p=gam;
     p.i++;
     if(cango(p) ){
-        arr[gam.i][gam.j]= 0;
-        arr[gam.i+1][gam.j]= 5;
+        
         gam.i++;
         return;
     }
@@ -197,14 +206,12 @@ void goleft(){
     if(cango( p ) ){
 
         if(gam.i==14 && gam.j==0){
-            arr[gam.i][gam.j]= 0;
-            arr[gam.i][wi-1]= 5;
+            
             gam.j=wi-1;
             return;
         }
         
-        arr[gam.i][gam.j]= 0;
-        arr[gam.i][gam.j-1]= 5;
+        
         gam.j--;
         return;
     }
@@ -221,14 +228,12 @@ void goright(){
 
     if(cango( p ) ){
         if(gam.i==14 && gam.j==wi-1){
-            arr[gam.i][gam.j]= 0;
-            arr[gam.i][0]= 5;
+            
             gam.j=0;
             return;
         }
 
-        arr[gam.i][gam.j]= 0;
-        arr[gam.i][gam.j+1]= 5;
+        
         gam.j++;
         return;
 
