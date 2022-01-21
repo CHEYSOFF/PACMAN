@@ -749,7 +749,7 @@ int main(){
     ShowScrollBar(hwnd, SB_BOTH, 0);
     RECT ConsoleRect;
     GetWindowRect(hwnd, &ConsoleRect);
-    MoveWindow(hwnd, ConsoleRect.left, ConsoleRect.top, 470, 570, TRUE);
+    MoveWindow(hwnd, ConsoleRect.left, ConsoleRect.top, 470, 590, TRUE);
     // cin.sync();
     
     // cout<<'\n';
@@ -794,7 +794,7 @@ int main(){
         }
 
         lives--;
-
+        cout<<RED;
         cout<<"YOU DIED\n";
         cout<<"Lives left: "<<lives<<'\n';
         cout<<flush;
@@ -803,6 +803,7 @@ int main(){
     }
     system("cls");
     leave();
+    Sleep(10000);
     return 0;
 
     
