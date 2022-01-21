@@ -73,7 +73,7 @@ int arr[he][wi]={   {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
            /* 14 */ {2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 0, 0, 0, 0, 0, 0, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
                     {1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 0, 0, 0, 0, 0, 0, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1},
                     {1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1},
-                    {1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1},
+                    {1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1},//16 13
                     {1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1},
                     {1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1},
                     {1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1},
@@ -252,8 +252,21 @@ void addScore(point p){
     // else if(arr[p.i][p.j]==5)
 }
 
-atomic< int > death;//1 съеден монстром || -1 лив || 0 жив
 static atomic< bool > gameContinue = true;
+atomic< int > death;//1 съеден монстром || -1 лив || 0 жив
+
+void pacmandeath(){
+    if(se_mon==gam || fi_mon==gam){
+        gameContinue=0;
+        death=1;
+
+        
+        return;
+    }
+}
+
+
+
 void goup(){
     
     point p=gam;
@@ -262,6 +275,7 @@ void goup(){
         addScore(p);
         
         gam.i--;
+        pacmandeath();
         return;
     }
 
@@ -274,8 +288,9 @@ void godown(){
     p.i++;
     if(cango(p) ){
         addScore(p);
-
+          
         gam.i++;
+        pacmandeath(); 
         return;
     }
 
@@ -291,12 +306,14 @@ void goleft(){
             
 
             gam.j=wi-1;
+            pacmandeath();
             addScore(gam);
             return;
         }
         
         addScore(p);
         gam.j--;
+        pacmandeath();
         return;
     }
     
@@ -314,12 +331,14 @@ void goright(){
         if(gam.i==14 && gam.j==wi-1){
             
             gam.j=0;
+            pacmandeath();
             addScore(gam);
             return;
         }
 
         addScore(p);
         gam.j++;
+        pacmandeath();
         return;
 
 
@@ -359,18 +378,20 @@ point fastest_way(point s, point e){
 
     point tmp;
 
-    tmp.i=0;
-    tmp.j=1;
+    tmp.i=-1;
+    tmp.j=0;
     hod[0]=tmp;
 
-    tmp.j=-1;
+    tmp.i=0;
+    tmp.j=1;
     hod[1]=tmp;
 
     tmp.i=1;
     tmp.j=0;
     hod[2]=tmp;
 
-    tmp.i=-1;
+    tmp.i=0;
+    tmp.j=-1;
     hod[3]=tmp;
 
 
@@ -749,7 +770,7 @@ int main(){
     ShowScrollBar(hwnd, SB_BOTH, 0);
     RECT ConsoleRect;
     GetWindowRect(hwnd, &ConsoleRect);
-    MoveWindow(hwnd, ConsoleRect.left, ConsoleRect.top, 470, 590, TRUE);
+    MoveWindow(hwnd, ConsoleRect.left, ConsoleRect.top, 470, 600, TRUE);
     // cin.sync();
     
     // cout<<'\n';
@@ -759,8 +780,8 @@ int main(){
 
     
     while(lives!=0){
-        gam.i=1;
-        gam.j=1;
+        gam.i=17;
+        gam.j=13;
         curtime=0;
         gameContinue=1;
         fi_mon=u;
@@ -769,8 +790,8 @@ int main(){
         cout<<flush;
         updateScreen();
         death=0;
-        gam.i=1;
-        gam.j=1; 
+        gam.i=17;
+        gam.j=13; 
         
         
         threads_begin();
