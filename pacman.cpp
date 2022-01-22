@@ -8,6 +8,9 @@
 #include <queue>
 #include <algorithm>
 #include <atomic>
+#include <chrono>
+#include <random>
+#include <fstream>
 
 using namespace std;
 
@@ -20,6 +23,7 @@ using namespace std;
 #define RED "\033[91m"
 #define GRA "\033[0m"
 
+mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 
 struct point{
 
@@ -46,8 +50,9 @@ bool operator!=(point a, point b){
     return (a.i!=b.i || a.j!=b.j);
 }
 
-point u;
 
+
+point u;
 //300 очков всего
 // bool door=1;//0 открыта 1 закрыта
 int dir;
@@ -55,6 +60,22 @@ int curscore=0;
 int onesleft=300;
 const int he = 31;//26
 const int wi = 28;//26
+const int dop=2000;
+const int dcl=10000;
+atomic< int > curtime=0;
+const int cycle=dop+dcl;
+const int wait_ghost=400;
+const int wait_gamer=300;
+const int cherrySleep=40000;
+point fi_mon;
+point se_mon;
+vector< pair< string, int > > lbscore;
+int lbsize=10;
+int lives=3;
+
+static atomic< bool > gameContinue = true;
+atomic< int > death;//1 съеден монстром || -1 лив || 0 жив
+
 
 int arr[he][wi]={   {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
                     {1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1},
@@ -164,18 +185,6 @@ bool cango(point p){
 }
 
 
-
-// class Monster{
-//     public:
-//         int x_pos;
-//         int y_pos;
-// };
-
-point fi_mon;
-point se_mon;
-
-// vector< point > monster_pos;
-
 void updateScreen(){
     int i, j;
     // cout<<endl;
@@ -222,6 +231,7 @@ void updateScreen(){
                 if(arr[i][j]==0) cout<<GRA<<"."<<" ";
                 else if(arr[i][j]==1) cout<<PUR<<"H"<<" "; 
                 else if(arr[i][j]==2) cout<<GRE<<"*"<<" ";
+                else if(arr[i][j]==5) cout<<RED<<"6"<<" ";
 
 
             }
@@ -249,11 +259,13 @@ void addScore(point p){
             }
         }
     }
+    else if(arr[p.i][p.j]==5){
+        curscore+=5;
+        arr[p.i][p.j]=0;
+    }
     // else if(arr[p.i][p.j]==5)
 }
 
-static atomic< bool > gameContinue = true;
-atomic< int > death;//1 съеден монстром || -1 лив || 0 жив
 
 void pacmandeath(){
     if(se_mon==gam || fi_mon==gam){
@@ -264,8 +276,6 @@ void pacmandeath(){
         return;
     }
 }
-
-
 
 void goup(){
     
@@ -355,13 +365,6 @@ bool valid(point a){
     else return 0; 
 }
 
-// point fix(point a){
-//     if(a.j==-(wi-1)) a.j=1;
-//     else if(a.j==(wi-1) ) a.j=-1;
-//     return a;
-// }
-
-
 point fastest_way(point s, point e){
     queue< point > q;
     q.push (s);
@@ -448,7 +451,6 @@ point fastest_way(point s, point e){
     return u;
 }
 
-
 void mon_bfs(){
 
     point mon_dir=fastest_way(fi_mon, gam );
@@ -530,12 +532,6 @@ void mon_left(int &dir){
 
 }
 
-const int dop=2000;
-const int dcl=10000;
-atomic< int > curtime=0;
-const int cycle=dop+dcl;
-const int wait_ghost=400;
-const int wait_gamer=300;
 
 void mon_thr(){
     vector< bool > monplaced(3, 0);
@@ -679,24 +675,32 @@ void input_key(){
         FlushConsoleInputBuffer(GetStdHandle(STD_INPUT_HANDLE) );
     
         switch(getch()){
+                // case 246:
+                // case 214:
                 case 119:
                     if(arr[gam.i-1][gam.j]!=1){
                         dir=0;
                     }
                     
                     break;
+                // case 219:
+                // case 251:
                 case 115:
                     if(arr[gam.i+1][gam.j]!=1){
                         dir=2;
                     }
                     
                     break;
+                // case 212:
+                // case 244:
                 case 97:
                     if( (gam.j>=0 && arr[gam.i][gam.j-1]!=1) || (gam.i==14 && gam.j==0 )  ){
                         dir=3;
                     }
                     
                     break;
+                // case 194:
+                // case 226:
                 case 100:
                     if( (gam.j+1<wi && arr[gam.i][gam.j+1]!=1) || (gam.i==14 && gam.j==wi-1) ){
                         dir=1;
@@ -715,16 +719,104 @@ void input_key(){
     }
 }
 
+void leader_board(string p_name){
+    FlushConsoleInputBuffer(GetStdHandle(STD_INPUT_HANDLE) );
+    ifstream fin;
+    
+    fin.open("leaderboard.txt");
+    
+    
+    
+    vector< pair< int, string >  > results;
+    string s;
+    // cout<<"1";
+    while(getline(fin, s)){
+        string name;
+        int score;
+        int ind_sp=s.find(' ');
+        name=s.substr(0, ind_sp);
+        cout<<ind_sp<<" "<<name<<endl;
+        score=stoi(s.substr(ind_sp+1, s.size()-ind_sp-1));
+        results.push_back({score, name});
+
+        // cout<<name<<" "<<score<<endl;
+    }
+    fin.close();
+    results.push_back( {curscore, p_name} );
+    sort( results.begin(), results.end(), greater<pair<int, string> >() );
+    int n=results.size();
+
+    ofstream fout;
+    fout.open("leaderboard.txt");
+    lbsize=min(lbsize, n);
+    for(int i=0;i<lbsize; i++ ){
+        lbscore.push_back( {results[i].second, results[i].first} );
+        fout<<results[i].second<<" "<<results[i].first<<'\n';
+    }
+    fout.close();
+    return;
+    
+}
 
 void leave(){
-    
     system("cls");
-    cout<<"GAME OVER\n";;
-    cout<<"YOUR SCORE="<<curscore<<'\n';
+    cout<<RED;
+    cout<<"ENTER YOUR NAME:"<<'\n'<<BLU<<flush;
+    string p_name;
+    getline(cin, p_name);
+    leader_board(p_name);
+    system("cls");
+    cout<<RED<<"GAME OVER\n";;
+    cout<<BLU<<p_name<<CYA<<", YOUR SCORE="<<GRE<<curscore<<'\n';
+    cout<<CYA<<'\n'<<"     "<<"CURRENT LEADERBOARD:"<<'\n'<<'\n';
+
+    int malen=0;
+
+    for(int i=0;i<lbsize;i++){
+        malen=max(malen, int( lbscore[i].first.size() )  );
+    }
+    // cout<<malen<<endl;
+
+    for(int i=0;i<lbsize;i++){
+        cout<<"      ";
+        cout<<BLU<<lbscore[i].first;
+
+        for(int j=0;j<malen-lbscore[i].first.size(); j++){
+            cout<<" ";
+        }
+
+        cout<<"   "<<GRE<<lbscore[i].second<<'\n';
+    }
     cout<<flush;
+    
 
 }
 
+void cherry_spawn(){
+    
+    while(gameContinue){
+        Sleep(cherrySleep);
+        static std::uniform_int_distribution<int> uidi(1,he-2+1);
+        static std::uniform_int_distribution<int> uidj(1,wi-2+1);
+        int ib=uidi(rng);
+        int jb=uidj(rng);
+        for(int i=jb;i<he;i++){
+            for(int j=jb;j<wi;j++){
+                if(i>=12 && i<=16 && j>=10 && j<=17) continue;
+                if(arr[i][j]==0 /*|| arr[i][j]==2*/){
+                    arr[i][j]=5;
+                    ib=i;
+                    jb=j;
+                    i=he;
+                    j=wi;
+                    
+                }
+            }
+        }
+        Sleep(cherrySleep);
+        arr[ib][jb]=0;
+    }
+}
 
 void threads_begin(){
 
@@ -733,10 +825,12 @@ void threads_begin(){
     thread door(door_time);
     thread screen(scr_upd_tim);
     thread mon(mon_thr);
+    thread cherry(cherry_spawn);
     // thread scor(score_check);
 
     screen.join();
     // scor.detach();
+    cherry.detach();
     door.detach();
     cha.detach();
     inp.detach();
@@ -745,11 +839,15 @@ void threads_begin(){
 }
 
 
+
 int main(){
     
-
+    
     ios_base::sync_with_stdio(0);
     cin.tie(0);
+    
+    
+
     srand(time(NULL));
     
     u.i=-1;
@@ -770,12 +868,12 @@ int main(){
     ShowScrollBar(hwnd, SB_BOTH, 0);
     RECT ConsoleRect;
     GetWindowRect(hwnd, &ConsoleRect);
-    MoveWindow(hwnd, ConsoleRect.left, ConsoleRect.top, 470, 600, TRUE);
+    MoveWindow(hwnd, ConsoleRect.left, ConsoleRect.top, 600, 600, TRUE);
     // cin.sync();
     
     // cout<<'\n';
 
-    int lives=3;
+    
     // if (!gameContinue.is_lock_free()) return 10;
 
     
@@ -832,17 +930,13 @@ int main(){
 
 
     
-    /*5-персонаж
-      7-монстр
-      0-пустота
-      1-стенка
-      9-выход
-      224-клавиша вверх
+    /*
       119-W
       97-A
       115-S
       100-D
-      27-ESC*/
+      27-ESC
+    */
 
     
 
