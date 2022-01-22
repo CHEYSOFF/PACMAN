@@ -72,6 +72,8 @@ point se_mon;
 vector< pair< string, int > > lbscore;
 int lbsize=10;
 int lives=3;
+const int mo_co=2;
+vector< bool > monplaced(mo_co+1, 0);
 
 static atomic< bool > gameContinue = true;
 atomic< int > death;//1 съеден монстром || -1 лив || 0 жив
@@ -532,9 +534,8 @@ void mon_left(int &dir){
 
 }
 
-
 void mon_thr(){
-    vector< bool > monplaced(3, 0);
+    
     // bool mon2placed=0;
     int m_l_dir=0;//0 вверх | 1 вправо | 2 вниз | 3 влево
     while(gameContinue){
@@ -543,9 +544,9 @@ void mon_thr(){
             if( !monplaced[1] ){
                 fi_mon.i=14;
                 fi_mon.j=12;
-
+                monplaced[1]=1;
             }
-            monplaced[1]=1;
+            
             mon_bfs();
         }
         
@@ -554,9 +555,9 @@ void mon_thr(){
             if( !monplaced[2] ){
                 se_mon.i=14;
                 se_mon.j=11;
-
+                monplaced[2]=1;
             }
-            monplaced[2]=1;
+            
             mon_left(m_l_dir);
             
         } 
@@ -639,8 +640,6 @@ void character(){
     return;
 }
 
-
-
 void door_time(){
     while(gameContinue){
 
@@ -672,38 +671,47 @@ void scr_upd_tim(){
 
 void input_key(){
     while(gameContinue){
-        FlushConsoleInputBuffer(GetStdHandle(STD_INPUT_HANDLE) );
+        
     
         switch(getch()){
                 // case 246:
                 // case 214:
+                case 87:
                 case 119:
                     if(arr[gam.i-1][gam.j]!=1){
                         dir=0;
+                        // FlushConsoleInputBuffer(GetStdHandle(STD_INPUT_HANDLE) );
                     }
                     
                     break;
                 // case 219:
                 // case 251:
+                case 83:
                 case 115:
                     if(arr[gam.i+1][gam.j]!=1){
                         dir=2;
+                        // FlushConsoleInputBuffer(GetStdHandle(STD_INPUT_HANDLE) );
                     }
                     
                     break;
                 // case 212:
                 // case 244:
+                // case 192:
+                case 65:
                 case 97:
                     if( (gam.j>=0 && arr[gam.i][gam.j-1]!=1) || (gam.i==14 && gam.j==0 )  ){
                         dir=3;
+                        // FlushConsoleInputBuffer(GetStdHandle(STD_INPUT_HANDLE) );
                     }
                     
                     break;
                 // case 194:
                 // case 226:
+                case 68:
                 case 100:
                     if( (gam.j+1<wi && arr[gam.i][gam.j+1]!=1) || (gam.i==14 && gam.j==wi-1) ){
                         dir=1;
+                        // FlushConsoleInputBuffer(GetStdHandle(STD_INPUT_HANDLE) );
                     }
                     
                     break;
@@ -838,6 +846,28 @@ void threads_begin(){
 
 }
 
+void var_reset(){
+    gam.i=17;
+    gam.j=13;
+    curtime=0;
+    gameContinue=1;
+    fi_mon=u;
+    se_mon=u;
+    death=0;
+    arr[gam.i][gam.j]=0;
+    for( int i=0; i<mo_co+1; i++ ){
+        monplaced[i]=0;
+    }
+
+    for(int i=0;i<he;i++){
+        for(int j=0;j<wi;j++){
+            if(arr[i][j]==5) arr[i][j]=0;
+        }
+    }
+
+    return;
+
+}
 
 
 int main(){
@@ -878,35 +908,16 @@ int main(){
 
     
     while(lives!=0){
-        gam.i=17;
-        gam.j=13;
-        curtime=0;
-        gameContinue=1;
-        fi_mon=u;
-        se_mon=u;
+        var_reset();
+
         system("cls");
         cout<<flush;
         updateScreen();
-        death=0;
-        gam.i=17;
-        gam.j=13; 
+        
+        
         
         
         threads_begin();
-        arr[gam.i][gam.j]=0;
-        
-        // cout<<"LIVEs="<<lives<<endl;
-
-
-        // inp.detach();
-        // screen.detach();
-        // door.detach();
-        // cha.detach();
-
-
-        // cout<<death<<endl;
-
-        // Sleep(10000);
 
         if(death==-1){
             break;
@@ -917,7 +928,7 @@ int main(){
         cout<<"YOU DIED\n";
         cout<<"Lives left: "<<lives<<'\n';
         cout<<flush;
-        Sleep(7000);
+        Sleep(3000);
 
     }
     system("cls");
