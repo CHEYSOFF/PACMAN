@@ -14,7 +14,7 @@
 
 using namespace std;
 
-
+// https://habr.com/ru/post/119436/
 #define PUR "\033[95m"
 #define BLU "\033[94m"
 #define CYA "\033[96m"
@@ -22,6 +22,10 @@ using namespace std;
 #define YEL "\033[93m"
 #define RED "\033[91m"
 #define GRA "\033[0m"
+#define BOLD "\033[1m" // не работает в консоли
+// #define norm tput sgr0
+
+#define GRAb "\033[47"
 
 mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 
@@ -57,7 +61,7 @@ point u;
 // bool door=1;//0 открыта 1 закрыта
 int dir;
 int curscore=0;
-int onesleft=300;
+int onesleft=299;
 const int he = 31;//26
 const int wi = 28;//26
 const int dop=2000;
@@ -96,7 +100,7 @@ int arr[he][wi]={   {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
            /* 14 */ {2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 0, 0, 0, 0, 0, 0, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
                     {1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 0, 0, 0, 0, 0, 0, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1},
                     {1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1},
-                    {1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1},//16 13
+                    {1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 2, 2, 2, 0, 2, 2, 2, 2, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1},//16 13
                     {1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1},
                     {1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1},
                     {1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1},
@@ -129,7 +133,7 @@ int ones[he][wi]={   {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
            /* 14 */ {2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 0, 0, 0, 0, 0, 0, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
                     {1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 0, 0, 0, 0, 0, 0, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1},
                     {1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1},
-                    {1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1},
+                    {1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 2, 2, 2, 0, 2, 2, 2, 2, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1},
                     {1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1},
                     {1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1},
                     {1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1},
@@ -190,6 +194,7 @@ bool cango(point p){
 void updateScreen(){
     int i, j;
     // cout<<endl;
+    
     for(i=0;i<he+1;i++){
         
         cout<<"\033[F";
@@ -201,22 +206,25 @@ void updateScreen(){
     for(i=0;i<he;i++){
         cout<<"   ";
         for(j=0;j<wi;j++){
+            // tput sgr0;
+            cout<<"\033[0m";
+            // cout<<"\033[7m";
             bool outed=0;
             point curpo;
             curpo.i=i;
             curpo.j=j;
             if(fi_mon!=u && fi_mon==curpo){
-                cout<<CYA<<"@"<<" ";
+                cout<<CYA<<BOLD<<"@"<<" ";
                 outed=1;
                 continue;
             }
             else if(se_mon!=u && se_mon==curpo){
-                cout<<BLU<<"@"<<" ";
+                cout<<BLU<<BOLD<<"@"<<" ";
                 outed=1;
                 continue;
             }
             else if(gam==curpo){
-                cout<<YEL<<"C"<<" ";
+                cout<<YEL<<BOLD<<"C"<<" ";
                 outed=1;
                 continue;
             }
@@ -233,7 +241,7 @@ void updateScreen(){
                 if(arr[i][j]==0) cout<<GRA<<"."<<" ";
                 else if(arr[i][j]==1) cout<<PUR<<"H"<<" "; 
                 else if(arr[i][j]==2) cout<<GRE<<"*"<<" ";
-                else if(arr[i][j]==5) cout<<RED<<"6"<<" ";
+                else if(arr[i][j]==5) cout<<RED<<BOLD<<"6"<<" ";
 
 
             }
@@ -253,7 +261,7 @@ void addScore(point p){
         arr[p.i][p.j]=0;
         onesleft--;
         if(onesleft<=0){
-            onesleft=300;
+            onesleft=299;
             for(int i=0;i<he;i++){
                 for(int j=0;j<wi;j++){
                     if(!(i==12 && j>=11 && j<=16) ) arr[i][j]=ones[i][j];
@@ -283,10 +291,17 @@ void goup(){
     
     point p=gam;
     p.i--;
+
+    p.i+=he;
+    p.j+=wi;
+
+    p.i%=he;
+    p.j%=wi;
+
     if( cango(p) ){
         addScore(p);
         
-        gam.i--;
+        gam=p;
         pacmandeath();
         return;
     }
@@ -298,10 +313,17 @@ void goup(){
 void godown(){
     point p=gam;
     p.i++;
+
+    p.i+=he;
+    p.j+=wi;
+
+    p.i%=he;
+    p.j%=wi;
+
     if(cango(p) ){
         addScore(p);
           
-        gam.i++;
+        gam=p;
         pacmandeath(); 
         return;
     }
@@ -311,20 +333,17 @@ void godown(){
 void goleft(){
     point p=gam;
     p.j--;
+
+    p.i+=he;
+    p.j+=wi;
+
+    p.i%=he;
+    p.j%=wi;
+
     if(cango( p ) ){
-
-        if(gam.i==14 && gam.j==0){
-            
-            
-
-            gam.j=wi-1;
-            pacmandeath();
-            addScore(gam);
-            return;
-        }
         
         addScore(p);
-        gam.j--;
+        gam=p;
         pacmandeath();
         return;
     }
@@ -339,17 +358,16 @@ void goright(){
     point p=gam;
     p.j++;
 
-    if(cango( p ) ){
-        if(gam.i==14 && gam.j==wi-1){
-            
-            gam.j=0;
-            pacmandeath();
-            addScore(gam);
-            return;
-        }
+    p.i+=he;
+    p.j+=wi;
 
+    p.i%=he;
+    p.j%=wi;
+
+    if(cango( p ) ){
+        
         addScore(p);
-        gam.j++;
+        gam=p;
         pacmandeath();
         return;
 
@@ -871,7 +889,7 @@ void var_reset(){
 
 
 int main(){
-    
+    // cout<<GRAb;
     
     ios_base::sync_with_stdio(0);
     cin.tie(0);
