@@ -23,9 +23,13 @@ using namespace std;
 #define RED "\033[91m"
 #define GRA "\033[0m"
 #define BOLD "\033[1m" // не работает в консоли
+#define RIG "\033[1C"
+#define UP "\033[F"
 // #define norm tput sgr0
 
 #define GRAb "\033[47"
+
+
 
 mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 
@@ -78,9 +82,14 @@ int lbsize=10;
 int lives=3;
 const int mo_co=2;
 vector< bool > monplaced(mo_co+1, 0);
-
+int out_le=wi;// для центрирования вывода
+string mar_left=" | ";
 static atomic< bool > gameContinue = true;
 atomic< int > death;//1 съеден монстром || -1 лив || 0 жив
+int win_wi=460;
+int win_he=650;
+int pix_char=8;
+point gam;
 
 
 int arr[he][wi]={   {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
@@ -182,32 +191,52 @@ int zeroes[he][wi]={   {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                     {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
     };
 
-point gam;
+int margin(string s){
+    return (win_wi/pix_char-s.size())/2;
+}
 
+void centerized_out(string s){
+
+    // cout<<mar_left;
+
+    int ot= margin(s);
+    for(int i=0;i<ot;i++){
+        cout<<" ";
+    }
+
+    cout<<s;
+
+
+}
 
 bool cango(point p){
     if( (arr[p.i][p.j]!=1 && !(p.i==12 && p.j>=11 && p.j<=16) ) || (p.i==14 && ( p.j==-1 || p.j==wi )  ) ) return true;
     return false;
 }
 
+void gotoxy(short x, short y) {
+    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), (COORD) { x, y } );
+}
 
 void updateScreen(){
     int i, j;
     // cout<<endl;
     
-    for(i=0;i<he+1;i++){
-        
-        cout<<"\033[F";
-        // cout<<"                                                                                                                                              ";
-        // cout<<"\033[F";
-    }
+    for(i=0;i<he+4+3;i++) cout<<UP;
+
+    cout<<GRA;
+    cout<<" +=";
+    for(int i=0; i<wi*2-1; i++) cout<<'=';
+    cout<<"=+ ";
+    cout<<'\n';
     // string s(he);
     // cout<<'\n';
     for(i=0;i<he;i++){
-        cout<<"   ";
+
+        cout<<GRA<<mar_left;
         for(j=0;j<wi;j++){
             // tput sgr0;
-            cout<<"\033[0m";
+            cout<<GRA;
             // cout<<"\033[7m";
             bool outed=0;
             point curpo;
@@ -249,11 +278,58 @@ void updateScreen(){
             
         }
         // cout<<"                       ";
+        cout<<GRA<<"| ";
         cout<<'\n';
     }
-    cout<<"YOUR SCORE="<<curscore<<'\n';
+    // cout<<mar_left;
+    // cout<<'\n';
+    // cout<<'\n';
+    
+    cout<<GRA;
+    // cout<<'\n';
+    // cout<<GRA<<mar_left;
+    cout<<GRA<<" +=";
+    for(int i=0; i<2*wi-1; i++) cout<<'=';
+    cout<<"=+ ";
+
+    cout<<'\n';
+    cout<<GRA<<mar_left;
+    cout<<'\n';
+    cout<<GRA<<mar_left;
+    cout<<YEL;
+    string ys="YOUR SCORE="+to_string(curscore);
+    centerized_out(ys);
+    cout<<'\n';
+    cout<<GRA<<mar_left;
+    string ll="LIVES LEFT: "+to_string(lives);
+    cout<<RED;
+    centerized_out(ll);
+
+    cout<<'\n';
+    for(int i=0;i<1;i++){
+        cout<<GRA<<mar_left;
+        cout<<'\n';
+    }
+    cout<<GRA;
+    cout<<" +=";
+    for(int i=0; i<wi*2-1; i++) cout<<'=';
+    cout<<"=+ ";
+
+    for(int i=0;i<4;i++) cout<<UP;
+    for(int i=0;i<4;i++){
+        
+        for(int i=0;i<wi*2+mar_left.size()-1;i++) cout<<RIG;
+        cout<<GRA<<" | ";
+        cout<<'\n';
+    }
+
+
+
     cout<<flush;
+    // cout<<"YOUR SCORE="<<curscore<<'\n';
+    // cout<<flush;
 }
+
 
 void addScore(point p){
     if(arr[p.i][p.j]==2){
@@ -275,7 +351,6 @@ void addScore(point p){
     }
     // else if(arr[p.i][p.j]==5)
 }
-
 
 void pacmandeath(){
     if(se_mon==gam || fi_mon==gam){
@@ -785,16 +860,53 @@ void leader_board(string p_name){
 }
 
 void leave(){
+    FlushConsoleInputBuffer(GetStdHandle(STD_INPUT_HANDLE) );
     system("cls");
+    // cout<<mar_left;
+    
+    // for(int i=0;i<3;i++){
+    //     cout<<'\n';
+    // }
+    // cout<<flush;
+
     cout<<RED;
-    cout<<"ENTER YOUR NAME:"<<'\n'<<BLU<<flush;
+    string eyn="ENTER YOUR NAME:";
+    centerized_out(eyn);
+    cout<<BLU;
+    cout<<'\n';
+    cout<<flush;
+    // cout<<"ENTER YOUR NAME:"<<'\n'<<BLU<<flush;
+    int name_mar=margin(eyn);
+    // cout<<"|";
+    for(int i=0;i<name_mar;i++) cout<<' ';
+    cout<<flush;
+    // cout<<name_mar;
     string p_name;
     getline(cin, p_name);
     leader_board(p_name);
     system("cls");
-    cout<<RED<<"GAME OVER\n";;
-    cout<<BLU<<p_name<<CYA<<", YOUR SCORE="<<GRE<<curscore<<'\n';
-    cout<<CYA<<'\n'<<"     "<<"CURRENT LEADERBOARD:"<<'\n'<<'\n';
+
+    string go="GAME OVER";
+    // cout<<RED<<"GAME OVER"<<'\n';
+    cout<<RED;
+    centerized_out(go);
+    cout<<'\n';
+    string ys=", YOUR SCORE=";
+    string csstr=to_string(curscore);
+    int sc_mar=margin(p_name+ys+csstr+csstr);
+    cout<<BLU;
+    for(int i=0;i<sc_mar+1;i++) cout<<' ';
+    cout<<BLU<<p_name<<CYA<<ys<<GRE<<csstr<<'\n';
+
+    cout<<CYA;
+    cout<<'\n';
+    string cl="CURRENT LEADERBOARD:";
+    centerized_out(cl);
+    int mar_lb=margin(cl);
+
+    cout<<'\n'<<'\n';
+
+    // cout<<CYA<<'\n'<<"     "<<"CURRENT LEADERBOARD:"<<'\n'<<'\n';
 
     int malen=0;
 
@@ -804,7 +916,9 @@ void leave(){
     // cout<<malen<<endl;
 
     for(int i=0;i<lbsize;i++){
-        cout<<"      ";
+        // cout<<"      ";
+        for(int i=0;i<mar_lb; i++) cout<<' ';
+        // cout<<BLU;
         cout<<BLU<<lbscore[i].first;
 
         for(int j=0;j<malen-lbscore[i].first.size(); j++){
@@ -894,7 +1008,14 @@ int main(){
     ios_base::sync_with_stdio(0);
     cin.tie(0);
     
-    
+    // скрывает курсор
+    void* handle = GetStdHandle(STD_OUTPUT_HANDLE);
+    CONSOLE_CURSOR_INFO structCursorInfo;
+    GetConsoleCursorInfo(handle,&structCursorInfo);
+    structCursorInfo.bVisible = FALSE;
+    SetConsoleCursorInfo( handle, &structCursorInfo );
+    //
+
 
     srand(time(NULL));
     
@@ -916,7 +1037,7 @@ int main(){
     ShowScrollBar(hwnd, SB_BOTH, 0);
     RECT ConsoleRect;
     GetWindowRect(hwnd, &ConsoleRect);
-    MoveWindow(hwnd, ConsoleRect.left, ConsoleRect.top, 600, 600, TRUE);
+    MoveWindow(hwnd, ConsoleRect.left, ConsoleRect.top, win_wi, win_he, TRUE);
     // cin.sync();
     
     // cout<<'\n';
@@ -942,16 +1063,31 @@ int main(){
         }
 
         lives--;
+
+        for(int i=0;i<5;i++) cout<<UP;
+        cout<<'\n';
+        cout<<'\n';
+        
+        string yd="YOU DIED";
+        // cout<<"YOU DIED\n";
+        cout<<GRA<<mar_left;
         cout<<RED;
-        cout<<"YOU DIED\n";
-        cout<<"Lives left: "<<lives<<'\n';
+        centerized_out(yd);
+        cout<<"     ";//чтобы закрыть предыдущий текст :(
+        cout<<'\n';
+        cout<<GRA<<mar_left;
+        cout<<RED;
+        string ll="LIVES LEFT: "+to_string(lives);
+        centerized_out(ll);
+        cout<<'\n';
+        // cout<<"Lives left: "<<lives<<'\n';
         cout<<flush;
         Sleep(3000);
 
     }
     system("cls");
     leave();
-    Sleep(10000);
+    Sleep(100000);
     return 0;
 
     

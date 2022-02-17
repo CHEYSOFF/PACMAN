@@ -1,3 +1,4 @@
+@nemavich 752
 itsme 673
 GERMAN 304
 bfhf 206
@@ -5,6 +6,5 @@ PEPEthepig 132
 eaea 109
 gg 96
 Cheysoff 79
+gamer 74
 jojo 70
-c 30
-amu 19
