@@ -872,6 +872,10 @@ void leave(){
     cout<<RED;
     string eyn="ENTER YOUR NAME:";
     centerized_out(eyn);
+    string ut10s="(up to 10 symbols)";
+    cout<<'\n';
+    cout<<YEL;
+    centerized_out(ut10s);
     cout<<BLU;
     cout<<'\n';
     cout<<flush;
@@ -883,6 +887,9 @@ void leave(){
     // cout<<name_mar;
     string p_name;
     getline(cin, p_name);
+    if(p_name.size()>=10){
+        p_name = p_name.substr( 0, 10 )+"...";
+    }
     leader_board(p_name);
     system("cls");
 
