@@ -31,6 +31,8 @@ using namespace std;
 
 
 
+
+
 mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 
 struct point{
@@ -820,6 +822,20 @@ void input_key(){
     }
 }
 
+string space_suf_del(string s){
+    int k=s.size();
+    for(int i=s.size()-1;i>=0;i--){
+        if(s[i]==' '){
+            k=i;
+        }
+        else{
+            break;
+        }
+    }
+    s=s.substr(0, k);
+    return s;
+}
+
 void leader_board(string p_name){
     FlushConsoleInputBuffer(GetStdHandle(STD_INPUT_HANDLE) );
     ifstream fin;
@@ -836,16 +852,43 @@ void leader_board(string p_name){
         int score;
         string rev=s;
         reverse(rev.begin(), rev.end());
-        int ind_sp=s.size()-rev.find(' ')-1;
+        auto tm=rev.find(' ');
+        if(tm==std::string::npos) continue;
+        int ind_sp=s.size()-tm-1;
         name=s.substr(0, ind_sp);
         cout<<ind_sp<<" "<<name<<endl;
-        score=stoi(s.substr(ind_sp+1, s.size()-ind_sp-1));
+        try{
+            score=stoi(s.substr(ind_sp+1, s.size()-ind_sp-1));
+        } catch( std::invalid_argument ){
+            continue;
+        }
+        
         results.push_back({score, name});
 
         // cout<<name<<" "<<score<<endl;
     }
     fin.close();
     results.push_back( {curscore, p_name} );
+
+    vector< pair< int, string >  > results_tmp;
+
+    for(int i=0; i<results.size(); i++){
+        string tmstr=results[i].second;
+        if(tmstr.size()>=3 && tmstr.substr( tmstr.size()-3, 3 ) == "..." ){
+            // cout<<"abo | "<<tmstr.substr( tmstr.size()-3, 3 )<<endl;
+            tmstr=tmstr.substr(0, tmstr.size()-3);
+        }
+        tmstr=space_suf_del(tmstr);
+        results[i].second=tmstr;
+        if(results[i].second.size()!=0){
+            results_tmp.push_back(results[i]);
+        }
+        // cout<<tmstr<<endl<<endl;
+    }
+
+    results=results_tmp;
+    
+
     sort( results.begin(), results.end(), greater<pair<int, string> >() );
     int n=results.size();
 
@@ -889,9 +932,9 @@ void leave(){
     cout<<flush;
     string p_name;
     getline(cin, p_name);
-    if(p_name.size()>=10){
-        p_name = p_name.substr( 0, 10 )+"...";
-    }
+    
+    // p_name=space_suf_del(p_name);
+
     while(p_name.size()==0){
 
         string nits="Name is too short";
@@ -918,6 +961,12 @@ void leave(){
             p_name = p_name.substr( 0, 10 )+"...";
         }
         
+    }
+
+    // p_name=space_suf_del(p_name);
+
+    if(p_name.size()>=10){
+        p_name = p_name.substr( 0, 10 )+"...";
     }
     leader_board(p_name);
     system("cls");
