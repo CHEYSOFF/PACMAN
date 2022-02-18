@@ -834,7 +834,9 @@ void leader_board(string p_name){
     while(getline(fin, s)){
         string name;
         int score;
-        int ind_sp=s.find(' ');
+        string rev=s;
+        reverse(rev.begin(), rev.end());
+        int ind_sp=s.size()-rev.find(' ')-1;
         name=s.substr(0, ind_sp);
         cout<<ind_sp<<" "<<name<<endl;
         score=stoi(s.substr(ind_sp+1, s.size()-ind_sp-1));
