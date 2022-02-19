@@ -23,6 +23,8 @@ using namespace std;
 #define RED "\033[91m"
 #define GRA "\033[0m"
 #define BOLD "\033[1m" // не работает в консоли
+
+
 #define RIG "\033[1C"
 #define UP "\033[F"
 // #define norm tput sgr0
@@ -92,6 +94,51 @@ int win_wi=460;
 int win_he=650;
 int pix_char=8;
 point gam;
+int char_he=7;
+int char_wi=5;
+int col_k=0;
+string let_col[4]={BLU, RED, YEL, GRE};
+static atomic< bool > menuContinue = true;
+int x_ch=2;//коэффицент растяжения букв по горизонтали (при изменение коэффицента с 2 все ломается :( )
+int y_ch=1;//коэффицент растяжения букв по вертикали
+
+
+vector< vector< bool > > char_w={   {0, 0, 0, 0, 0},
+                                    {1, 0, 1, 0, 1},
+                                    {1, 0, 1, 0, 1},
+                                    {1, 0, 1, 0, 1},
+                                    {1, 0, 1, 0, 1},
+                                    {0, 1, 0, 1, 0},
+                                    {0, 0, 0, 0, 0}
+                                };
+
+vector< vector< bool > > char_a={   {0, 0, 0, 0, 0},
+                                    {0, 0, 1, 0, 0},
+                                    {0, 1, 0, 1, 0},
+                                    {0, 1, 1, 1, 0},
+                                    {0, 1, 0, 1, 0},
+                                    {0, 1, 0, 1, 0},
+                                    {0, 0, 0, 0, 0}
+                                };
+
+vector< vector< bool > > char_s={   {0, 0, 0, 0, 0},
+                                    {0, 1, 1, 1, 0},
+                                    {0, 1, 0, 0, 0},
+                                    {0, 1, 1, 1, 0},
+                                    {0, 0, 0, 1, 0},
+                                    {0, 1, 1, 1, 0},
+                                    {0, 0, 0, 0, 0}
+                                };
+                                
+vector< vector< bool > > char_d={   {0, 0, 0, 0, 0},
+                                    {0, 1, 1, 0, 0},
+                                    {0, 1, 0, 1, 0},
+                                    {0, 1, 0, 1, 0},
+                                    {0, 1, 0, 1, 0},
+                                    {0, 1, 1, 0, 0},
+                                    {0, 0, 0, 0, 0}
+                                };
+
 
 
 int arr[he][wi]={   {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
@@ -197,7 +244,7 @@ int margin(string s){
     return (win_wi/pix_char-s.size())/2;
 }
 
-void centerized_out(string s){
+void cen_out(string s){
 
     // cout<<mar_left;
 
@@ -300,12 +347,12 @@ void updateScreen(){
     cout<<GRA<<mar_left;
     cout<<YEL;
     string ys="YOUR SCORE="+to_string(curscore);
-    centerized_out(ys);
+    cen_out(ys);
     cout<<'\n';
     cout<<GRA<<mar_left;
     string ll="LIVES LEFT: "+to_string(lives);
     cout<<RED;
-    centerized_out(ll);
+    cen_out(ll);
 
     cout<<'\n';
     for(int i=0;i<1;i++){
@@ -918,11 +965,11 @@ void leave(){
     // cout<<name_mar;
     cout<<BLU;
     string eyn="ENTER YOUR NAME:";
-    centerized_out(eyn);
+    cen_out(eyn);
     string ut10s="(up to 10 symbols)";
     cout<<'\n';
     cout<<YEL;
-    centerized_out(ut10s);
+    cen_out(ut10s);
     cout<<BLU;
     cout<<'\n';
     // cout<<"ENTER YOUR NAME:"<<'\n'<<BLU<<flush;
@@ -940,15 +987,15 @@ void leave(){
         string nits="Name is too short";
         system("cls");
         cout<<RED;
-        centerized_out(nits);
+        cen_out(nits);
         cout<<'\n';
         cout<<BLU;
         string eyn="ENTER YOUR NAME:";
-        centerized_out(eyn);
+        cen_out(eyn);
         string ut10s="(up to 10 symbols)";
         cout<<'\n';
         cout<<YEL;
-        centerized_out(ut10s);
+        cen_out(ut10s);
         cout<<BLU;
         cout<<'\n';
         // cout<<"ENTER YOUR NAME:"<<'\n'<<BLU<<flush;
@@ -974,7 +1021,7 @@ void leave(){
     string go="GAME OVER";
     // cout<<RED<<"GAME OVER"<<'\n';
     cout<<RED;
-    centerized_out(go);
+    cen_out(go);
     cout<<'\n';
     string ys=", YOUR SCORE=";
     string csstr=to_string(curscore);
@@ -986,7 +1033,7 @@ void leave(){
     cout<<CYA;
     cout<<'\n';
     string cl="CURRENT LEADERBOARD:";
-    centerized_out(cl);
+    cen_out(cl);
     int mar_lb=margin(cl);
 
     cout<<'\n'<<'\n';
@@ -1088,6 +1135,148 @@ void var_reset(){
 }
 
 
+
+void wait_for_input(){
+
+    if(getch()){
+        menuContinue=false;
+        return;
+    }
+
+}
+
+
+
+void letters_print(){
+
+    
+
+    for(int i=0;i<char_he;i++){
+        string www="";
+        for(int j=0;j<char_wi;j++){
+            if(char_w[i][j]==1){
+                for(int tt=0;tt<x_ch;tt++) www+="*";
+            }
+            else for(int tt=0;tt<x_ch;tt++) www+=" ";
+        }
+        cout<<let_col[col_k%4];
+        // cen_out(www);
+        // cout<<'\n';
+        // cout<<RED;
+        for(int kkk=0; kkk<y_ch;kkk++){
+            for(int j=0;j<23;j++) cout<<" ";
+            cout<<www;
+            cout<<'\n';
+        }
+        
+        
+    }
+
+    for(int i=0;i<char_he;i++){
+        // string as="";
+
+        string aaa="";
+        for(int j=0;j<char_wi;j++){
+            if(char_a[i][j]==1){
+                for(int tt=0;tt<x_ch;tt++) aaa+="*";
+            }
+            else for(int tt=0;tt<x_ch;tt++) aaa+=" ";
+        }
+        // as+=aaa;
+        
+
+        string sss="";
+        for(int j=0;j<char_wi;j++){
+            if(char_s[i][j]==1){
+                for(int tt=0;tt<x_ch;tt++) sss+="*";
+            }
+            else for(int tt=0;tt<x_ch;tt++) sss+=" ";
+        }
+        
+
+        // for(int j=0;j<14;j++) cout<<" ";
+        // as+="            ";
+
+        string ddd="";
+        for(int j=0;j<char_wi;j++){
+            if(char_d[i][j]==1){
+                for(int tt=0;tt<x_ch;tt++) ddd+="*";
+            }
+            else for(int tt=0;tt<x_ch;tt++) ddd+=" ";
+        }
+        // as+=ddd;
+        
+        // cout<<'\n';
+        // cen_out(as);
+        
+        for(int kkk=0; kkk<y_ch;kkk++){
+            cout<<let_col[(col_k+1)%4];
+            for(int j=0;j<11;j++) cout<<" ";
+            cout<<aaa;
+            cout<<"  ";
+            cout<<let_col[(col_k+2)%4];
+            cout<<sss;
+            cout<<"  ";
+            cout<<let_col[(col_k+3)%4];
+            cout<<ddd;
+            cout<<'\n';
+        }
+        
+
+    }
+    cout<<'\n';
+
+
+
+    cout<<flush;
+    Sleep(500);
+
+}
+
+void text_print(){
+
+    while(menuContinue){
+        system("cls");
+        cout<<'\n';
+        cout<<'\n';
+        string pabts="Press any button to start";
+        string C="CONTROLS";
+        cout<<RED;
+        cen_out(pabts);
+        cout<<'\n';
+        cout<<'\n';
+        cout<<'\n';
+        // cout<<'\n';
+        cout<<CYA;
+        cen_out(C);
+        cout<<'\n';
+        cout<<'\n';
+        letters_print();
+        col_k++;
+        col_k%=4;
+    }
+    
+}
+
+void threads_menu(){
+    
+    thread txt(text_print);
+    thread inp(wait_for_input);
+
+    inp.join();
+    txt.detach();
+
+}
+
+void start_menu(){
+
+    
+    threads_menu();
+    
+
+
+}
+
 int main(){
     // cout<<GRAb;
     
@@ -1131,6 +1320,7 @@ int main(){
     
     // if (!gameContinue.is_lock_free()) return 10;
 
+    start_menu();
     
     while(lives!=0){
         var_reset();
@@ -1158,13 +1348,13 @@ int main(){
         // cout<<"YOU DIED\n";
         cout<<GRA<<mar_left;
         cout<<RED;
-        centerized_out(yd);
+        cen_out(yd);
         cout<<"     ";//чтобы закрыть предыдущий текст :(
         cout<<'\n';
         cout<<GRA<<mar_left;
         cout<<RED;
         string ll="LIVES LEFT: "+to_string(lives);
-        centerized_out(ll);
+        cen_out(ll);
         cout<<'\n';
         // cout<<"Lives left: "<<lives<<'\n';
         cout<<flush;
