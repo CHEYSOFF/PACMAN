@@ -15,6 +15,7 @@
 
 #include "../../point.h"
 #include "../../variables.h"
+#include "player.h"
 
 using namespace std;
 
@@ -143,13 +144,7 @@ void mon_bfs(){
     }
     point newpos=fi_mon+mon_dir;
     fi_mon=newpos;
-    if( newpos==gam ){
-        gameContinue=0;
-        death=1;
-
-        
-        return;
-    }
+    pacmandeath();
     
 
 }
@@ -177,13 +172,7 @@ void mon_left(int &dir){
     next=se_mon + next_point(dir);
 
     se_mon=next;
-    if(se_mon==gam){
-        gameContinue=0;
-        death=1;
-
-        
-        return;
-    }
+    pacmandeath();
     
 
 

@@ -35,4 +35,7 @@ void addScore(point p){
         curscore+=5;
         arr[p.i][p.j]=0;
     }
+    else if(p==se_mon || p==fi_mon){
+        curscore+=20;
+    }
 }

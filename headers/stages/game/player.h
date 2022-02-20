@@ -16,6 +16,7 @@
 #include "../../score.h"
 #include "../../point.h"
 #include "../../variables.h"
+#include "energizer.h"
 
 using namespace std;
 
@@ -73,11 +74,27 @@ void input_key(){
 
 void pacmandeath(){
     if(se_mon==gam || fi_mon==gam){
-        gameContinue=0;
-        death=1;
 
+        if(energAct==0){
+            gameContinue=0;
+            death=1;
+
+            
+            return;  
+        }
+        else{
+
+            if(se_mon==gam){
+                se_mon=se_mon_start;
+                addScore(gam);
+            }
+            else if(fi_mon==gam){
+                fi_mon=fi_mon_start;
+                addScore(gam);
+            }
+
+        }
         
-        return;
     }
 }
 
@@ -99,7 +116,7 @@ void goup(){
 
     if( cango(p) ){
         addScore(p);
-        
+        energizer(p);
         gam=p;
         pacmandeath();
         return;
@@ -121,7 +138,7 @@ void godown(){
 
     if(cango(p) ){
         addScore(p);
-          
+        energizer(p);
         gam=p;
         pacmandeath(); 
         return;
@@ -140,8 +157,8 @@ void goleft(){
     p.j%=wi;
 
     if(cango( p ) ){
-        
         addScore(p);
+        energizer(p);
         gam=p;
         pacmandeath();
         return;
@@ -164,8 +181,8 @@ void goright(){
     p.j%=wi;
 
     if(cango( p ) ){
-        
         addScore(p);
+        energizer(p);
         gam=p;
         pacmandeath();
         return;

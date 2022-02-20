@@ -26,31 +26,35 @@
 #include "headers/stages/menu.h"
 #include "headers/stages/game_transition.h"
 
-// void hidecursor()
-// {
-//    HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
-//    CONSOLE_CURSOR_INFO info;
-//    info.dwSize = 100;
-//    info.bVisible = FALSE;
-//    SetConsoleCursorInfo(consoleHandle, &info);
-// }
-
 using namespace std;
+
 
 int main(){
     
     ios_base::sync_with_stdio(0);
     cin.tie(0);
     
-    // скрывает курсор
-    void* handle = GetStdHandle(STD_OUTPUT_HANDLE);
-    CONSOLE_CURSOR_INFO structCursorInfo;
-    GetConsoleCursorInfo(handle,&structCursorInfo);
-    structCursorInfo.bVisible = FALSE;
-    SetConsoleCursorInfo( handle, &structCursorInfo );
-    //
+    // // скрывает курсор
+    // void* handle = GetStdHandle(STD_OUTPUT_HANDLE);
+    // CONSOLE_CURSOR_INFO structCursorInfo;
+    // GetConsoleCursorInfo(handle,&structCursorInfo);
+    // structCursorInfo.bVisible = FALSE;
+    // SetConsoleCursorInfo( handle, &structCursorInfo );
+    // //
 
-    // hidecursor();
+    // printf("\e[?25l");
+
+    HANDLE hStdOut = NULL;
+    CONSOLE_CURSOR_INFO curInfo;
+
+    hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
+    GetConsoleCursorInfo(hStdOut, &curInfo);
+    curInfo.bVisible = FALSE;
+    SetConsoleCursorInfo(hStdOut, &curInfo);
+
+
+
+    
     
 
 
@@ -58,6 +62,10 @@ int main(){
     
     u.i=-1;
     u.j=-1;
+    se_mon_start.i=14;
+    se_mon_start.j=11;
+    fi_mon_start.i=14;
+    fi_mon_start.j=12;
 
     // убирает скролл бар
     HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);

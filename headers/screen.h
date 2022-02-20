@@ -54,7 +54,7 @@ void updateScreen(){
             curpo.i=i;
             curpo.j=j;
             if(fi_mon!=u && fi_mon==curpo){
-                cout<<CYA<<BOLD<<"@"<<" ";
+                cout<<BLU<<BOLD<<"@"<<" ";
                 outed=1;
                 continue;
             }
@@ -75,6 +75,7 @@ void updateScreen(){
                 else if(arr[i][j]==1) cout<<PUR<<"H"<<" "; 
                 else if(arr[i][j]==2) cout<<GRE<<"*"<<" ";
                 else if(arr[i][j]==5) cout<<RED<<BOLD<<"6"<<" ";
+                else if(arr[i][j]==3) cout<<RED<<BOLD<<"#"<<" ";
 
 
             }
@@ -104,10 +105,23 @@ void updateScreen(){
     cen_out(ll);
 
     cout<<'\n';
-    for(int i=0;i<1;i++){
-        cout<<GRA<<mar_left;
-        cout<<'\n';
+    
+    cout<<GRA<<mar_left;
+    
+    
+    if(energAct==1){
+        string eia="ENERGIZER IS ACTIVE";
+        cout<<energColArr[energCol];
+        cen_out(eia);
+        // cout<<'\n';
     }
+    else{
+        for(int i=0;i<2*wi;i++){
+            cout<<" ";
+        }
+    }
+    cout<<'\n';
+    
     cout<<GRA;
     cout<<" +=";
     for(int i=0; i<wi*2-1; i++) cout<<'=';

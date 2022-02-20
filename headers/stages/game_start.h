@@ -42,6 +42,7 @@ void threads_game(){
 
 void var_reset(){
     FlushConsoleInputBuffer(GetStdHandle(STD_INPUT_HANDLE) );
+    energAct=0;
     gam.i=17;
     gam.j=13;
     curtime=0;
