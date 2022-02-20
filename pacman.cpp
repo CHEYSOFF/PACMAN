@@ -26,6 +26,14 @@
 #include "headers/stages/menu.h"
 #include "headers/stages/game_transition.h"
 
+// void hidecursor()
+// {
+//    HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+//    CONSOLE_CURSOR_INFO info;
+//    info.dwSize = 100;
+//    info.bVisible = FALSE;
+//    SetConsoleCursorInfo(consoleHandle, &info);
+// }
 
 using namespace std;
 
@@ -41,6 +49,9 @@ int main(){
     structCursorInfo.bVisible = FALSE;
     SetConsoleCursorInfo( handle, &structCursorInfo );
     //
+
+    // hidecursor();
+    
 
 
     srand(time(NULL));
