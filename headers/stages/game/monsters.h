@@ -12,6 +12,7 @@
 #include <chrono>
 #include <random>
 #include <fstream>
+#include <map>
 
 #include "../../point.h"
 #include "../../variables.h"
@@ -53,6 +54,8 @@ point next_point(int dir){
 }
 
 point fastest_way(point s, point e){
+    // map< point, int > ways;
+    
     queue< point > q;
     q.push (s);
     point tmp_p;
@@ -69,18 +72,22 @@ point fastest_way(point s, point e){
     tmp.i=-1;
     tmp.j=0;
     hod[0]=tmp;
+    // ways[tmp]=0;
 
     tmp.i=0;
     tmp.j=1;
     hod[1]=tmp;
+    // ways[tmp]=1;
 
     tmp.i=1;
     tmp.j=0;
     hod[2]=tmp;
+    // ways[tmp]=2;
 
     tmp.i=0;
     tmp.j=-1;
     hod[3]=tmp;
+    // ways[tmp]=3;
 
 
     for(;!q.empty();){
@@ -91,12 +98,14 @@ point fastest_way(point s, point e){
         for(int kt=0; kt<4;kt++){
 
             point to=from+hod[kt];
-            if( to.i==14 && to.j==-1 ){
-                to.j=27;
-            }
-            else if( to.i==14 && to.j==28 ){
-                to.j=0;
-            }
+            to.j+=wi;
+            to.j%=wi;
+            // if( to.i==14 && to.j==-1 ){
+            //     to.j=27;
+            // }
+            // else if( to.i==14 && to.j==28 ){
+            //     to.j=0;
+            // }
             
 
             if( valid(to) && used[to.i][to.j]==u){
@@ -113,7 +122,51 @@ point fastest_way(point s, point e){
                         
                         if(used[nev.i][nev.j]==s){
                             point ans=nev-s;
-                            return(ans);
+                            if(energAct==0){
+                                return(ans); 
+                            }
+                            else{
+                                int hod_nu;/*=(ways[ans]+2)%4;*/
+                                for(int i=0;i<4;i++){
+                                    if(ans==hod[i]){
+                                        hod_nu=i;
+                                        break;
+                                    }
+                                }
+                                hod_nu+=2;
+                                hod_nu%=4;
+                                point next_p=s+hod[hod_nu];
+                                next_p.j+=wi;
+                                next_p.j%=wi;
+                                if(valid(next_p)){
+                                    return hod[hod_nu];
+                                }
+                                else{
+                                    hod_nu++;
+                                    hod_nu%=4;
+                                    next_p=s+hod[hod_nu];
+                                    next_p.j+=wi;
+                                    next_p.j%=wi;
+                                    if(valid(next_p)){
+                                        return hod[hod_nu];
+                                    }
+                                    else{
+                                        hod_nu+=2;
+                                        hod_nu%=4;
+                                        next_p=s+hod[hod_nu];
+                                        next_p.j+=wi;
+                                        next_p.j%=wi;
+                                        if(valid(next_p)){
+                                            return hod[hod_nu];
+                                        }
+                                        else{
+                                            return ans;
+                                        }
+                                    }
+                                }
+                                
+                            }
+                            
                         }
 
                         nev=used[nev.i][nev.j];
