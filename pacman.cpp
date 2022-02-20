@@ -12,6 +12,15 @@
 #include <random>
 #include <fstream>
 
+// #include "headers/game/threads/door.h"
+// #include "headers/game/threads/cherry.h"
+// // #include "headers/game/threads/ghosts.h"
+// #include "headers/game/threads/player.h"
+// #include "headers/game/screen.h"
+// // #include "headers/startvar.h"
+// #include "headers/point.h"
+
+
 using namespace std;
 
 // https://habr.com/ru/post/119436/
@@ -31,12 +40,6 @@ using namespace std;
 
 #define GRAb "\033[47"
 
-
-
-
-
-mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
-
 struct point{
 
     int i, j;
@@ -49,15 +52,18 @@ point operator+(point a, point b){
     tmp.j=a.j+b.j;
     return tmp;
 }
+
 point operator-(point a, point b){
     point tmp;
     tmp.i=a.i-b.i;
     tmp.j=a.j-b.j;
     return tmp;
 }
+
 bool operator==(point a, point b){
     return (a.i==b.i && a.j==b.j);
 }
+
 bool operator!=(point a, point b){
     return (a.i!=b.i || a.j!=b.j);
 }
@@ -66,12 +72,11 @@ bool operator!=(point a, point b){
 
 point u;
 //300 очков всего
-// bool door=1;//0 открыта 1 закрыта
 int dir;
 int curscore=0;
 int onesleft=299;
-const int he = 31;//26
-const int wi = 28;//26
+const int he = 31;
+const int wi = 28;
 const int dop=2000;
 const int dcl=10000;
 atomic< int > curtime=0;
@@ -98,9 +103,12 @@ int char_he=7;
 int char_wi=5;
 int col_k=0;
 string let_col[4]={BLU, RED, YEL, GRE};
+string num_col[3]={RED, YEL, GRE};
 static atomic< bool > menuContinue = true;
 int x_ch=2;//коэффицент растяжения букв по горизонтали (при изменение коэффицента с 2 все ломается :( )
 int y_ch=1;//коэффицент растяжения букв по вертикали
+int x_nu=5;
+int y_nu=3;
 
 
 vector< vector< bool > > char_w={   {0, 0, 0, 0, 0},
@@ -139,7 +147,40 @@ vector< vector< bool > > char_d={   {0, 0, 0, 0, 0},
                                     {0, 0, 0, 0, 0}
                                 };
 
+vector< vector< vector< bool > > > nums={
 
+                                    {
+                                        {0, 0, 0, 0, 0},
+                                        {0, 0, 0, 1, 0},
+                                        {0, 0, 1, 1, 0},
+                                        {0, 1, 0, 1, 0},
+                                        {0, 0, 0, 1, 0},
+                                        {0, 0, 0, 1, 0},
+                                        {0, 0, 0, 0, 0}
+                                    },
+
+                                    {
+                                        {0, 0, 0, 0, 0},
+                                        {0, 0, 1, 0, 0},
+                                        {0, 1, 0, 1, 0},
+                                        {0, 0, 0, 1, 0},
+                                        {0, 0, 1, 0, 0},
+                                        {0, 1, 1, 1, 0},
+                                        {0, 0, 0, 0, 0}
+                                    },
+
+                                    {
+                                        {0, 0, 0, 0, 0},
+                                        {0, 1, 1, 1, 0},
+                                        {0, 0, 0, 1, 0},
+                                        {0, 1, 1, 1, 0},
+                                        {0, 0, 0, 1, 0},
+                                        {0, 1, 1, 1, 0},
+                                        {0, 0, 0, 0, 0}
+                                    }
+
+
+};
 
 int arr[he][wi]={   {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
                     {1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1},
@@ -240,145 +281,114 @@ int zeroes[he][wi]={   {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                     {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
     };
 
-int margin(string s){
-    return (win_wi/pix_char-s.size())/2;
+mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
+
+void cherry_spawn(){
+    
+    while(gameContinue){
+        Sleep(cherrySleep);
+        static std::uniform_int_distribution<int> uidi(1,he-2+1);
+        static std::uniform_int_distribution<int> uidj(1,wi-2+1);
+        int ib=uidi(rng);
+        int jb=uidj(rng);
+        for(int i=jb;i<he;i++){
+            for(int j=jb;j<wi;j++){
+                if(i>=12 && i<=16 && j>=10 && j<=17) continue;
+                if(arr[i][j]==0 /*|| arr[i][j]==2*/){
+                    arr[i][j]=5;
+                    ib=i;
+                    jb=j;
+                    i=he;
+                    j=wi;
+                    
+                }
+            }
+        }
+        Sleep(cherrySleep);
+        arr[ib][jb]=0;
+    }
 }
 
-void cen_out(string s){
+void dopen(){
+    for(int j=11;j<=16;j++) arr[12][j]=0;
+}
 
-    // cout<<mar_left;
+void dclose(){
+    for(int j=11;j<=16;j++) arr[12][j]=1;
+}
 
-    int ot= margin(s);
-    for(int i=0;i<ot;i++){
-        cout<<" ";
+void door_time(){
+    while(gameContinue){
+
+        dopen();
+        Sleep(dop);
+        if(curtime<cycle*3) curtime+=dop;
+        
+        dclose();
+        Sleep(dcl);
+        if(curtime<cycle*3) curtime+=dcl;
+
+
+
     }
+}
 
-    cout<<s;
+void input_key(){
+    while(gameContinue){
+        
+    
+        switch(getch()){
+                // case 246:
+                // case 214:
+                case 87:
+                case 119:
+                    if(arr[gam.i-1][gam.j]!=1){
+                        dir=0;
+                    }
+                    
+                    break;
+                // case 219:
+                // case 251:
+                case 83:
+                case 115:
+                    if(arr[gam.i+1][gam.j]!=1){
+                        dir=2;
+                    }
+                    
+                    break;
+                // case 212:
+                // case 244:
+                // case 192:
+                case 65:
+                case 97:
+                    if( (gam.j>=0 && arr[gam.i][gam.j-1]!=1) || (gam.i==14 && gam.j==0 )  ){
+                        dir=3;
+                    }
+                    
+                    break;
+                // case 194:
+                // case 226:
+                case 68:
+                case 100:
+                    if( (gam.j+1<wi && arr[gam.i][gam.j+1]!=1) || (gam.i==14 && gam.j==wi-1) ){
+                        dir=1;
+                    }
+                    
+                    break;
+                case 27:
+                    gameContinue=0;
+                    death=-1;
+                    break;
+            }
 
 
+    }
 }
 
 bool cango(point p){
     if( (arr[p.i][p.j]!=1 && !(p.i==12 && p.j>=11 && p.j<=16) ) || (p.i==14 && ( p.j==-1 || p.j==wi )  ) ) return true;
     return false;
 }
-
-void gotoxy(short x, short y) {
-    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), (COORD) { x, y } );
-}
-
-void updateScreen(){
-    int i, j;
-    // cout<<endl;
-    
-    for(i=0;i<he+4+3;i++) cout<<UP;
-
-    cout<<GRA;
-    cout<<" +=";
-    for(int i=0; i<wi*2-1; i++) cout<<'=';
-    cout<<"=+ ";
-    cout<<'\n';
-    // string s(he);
-    // cout<<'\n';
-    for(i=0;i<he;i++){
-
-        cout<<GRA<<mar_left;
-        for(j=0;j<wi;j++){
-            // tput sgr0;
-            cout<<GRA;
-            // cout<<"\033[7m";
-            bool outed=0;
-            point curpo;
-            curpo.i=i;
-            curpo.j=j;
-            if(fi_mon!=u && fi_mon==curpo){
-                cout<<CYA<<BOLD<<"@"<<" ";
-                outed=1;
-                continue;
-            }
-            else if(se_mon!=u && se_mon==curpo){
-                cout<<BLU<<BOLD<<"@"<<" ";
-                outed=1;
-                continue;
-            }
-            else if(gam==curpo){
-                cout<<YEL<<BOLD<<"C"<<" ";
-                outed=1;
-                continue;
-            }
-            // for(int mon_num=0; mon_num<monster_pos.size(); mon_num++){
-            //     if(monster_pos[mon_num]==curpo){
-            //         cout<<CYA<<"@"<<" ";
-            //         outed=1;
-            //         break;
-            //     }
-            // }
-            if(!outed){
-
-
-                if(arr[i][j]==0) cout<<GRA<<"."<<" ";
-                else if(arr[i][j]==1) cout<<PUR<<"H"<<" "; 
-                else if(arr[i][j]==2) cout<<GRE<<"*"<<" ";
-                else if(arr[i][j]==5) cout<<RED<<BOLD<<"6"<<" ";
-
-
-            }
-            
-            
-        }
-        // cout<<"                       ";
-        cout<<GRA<<"| ";
-        cout<<'\n';
-    }
-    // cout<<mar_left;
-    // cout<<'\n';
-    // cout<<'\n';
-    
-    cout<<GRA;
-    // cout<<'\n';
-    // cout<<GRA<<mar_left;
-    cout<<GRA<<" +=";
-    for(int i=0; i<2*wi-1; i++) cout<<'=';
-    cout<<"=+ ";
-
-    cout<<'\n';
-    cout<<GRA<<mar_left;
-    cout<<'\n';
-    cout<<GRA<<mar_left;
-    cout<<YEL;
-    string ys="YOUR SCORE="+to_string(curscore);
-    cen_out(ys);
-    cout<<'\n';
-    cout<<GRA<<mar_left;
-    string ll="LIVES LEFT: "+to_string(lives);
-    cout<<RED;
-    cen_out(ll);
-
-    cout<<'\n';
-    for(int i=0;i<1;i++){
-        cout<<GRA<<mar_left;
-        cout<<'\n';
-    }
-    cout<<GRA;
-    cout<<" +=";
-    for(int i=0; i<wi*2-1; i++) cout<<'=';
-    cout<<"=+ ";
-
-    for(int i=0;i<4;i++) cout<<UP;
-    for(int i=0;i<4;i++){
-        
-        for(int i=0;i<wi*2+mar_left.size()-1;i++) cout<<RIG;
-        cout<<GRA<<" | ";
-        cout<<'\n';
-    }
-
-
-
-    cout<<flush;
-    // cout<<"YOUR SCORE="<<curscore<<'\n';
-    // cout<<flush;
-}
-
 
 void addScore(point p){
     if(arr[p.i][p.j]==2){
@@ -398,7 +408,6 @@ void addScore(point p){
         curscore+=5;
         arr[p.i][p.j]=0;
     }
-    // else if(arr[p.i][p.j]==5)
 }
 
 void pacmandeath(){
@@ -409,6 +418,11 @@ void pacmandeath(){
         
         return;
     }
+}
+
+bool valid(point a){
+    if(a.i<he && a.i>=0 && a.j<wi && a.j>=0 && arr[a.i][a.j]!=1) return 1;
+    else return 0; 
 }
 
 void goup(){
@@ -504,9 +518,171 @@ void goright(){
     
 }
 
-bool valid(point a){
-    if(a.i<he && a.i>=0 && a.j<wi && a.j>=0 && arr[a.i][a.j]!=1) return 1;
-    else return 0; 
+void character(){
+    dir=1; //0 вверх | 1 вправо | 2 вниз | 3 влево
+
+    while (gameContinue){
+        
+        switch(dir){
+            case 0:
+                goup();
+                break;
+            case 2:
+                godown();
+                break;
+            case 3:
+                goleft();
+                break;
+            case 1:
+                goright();
+                break;
+        }
+
+
+        Sleep(wait_gamer);
+    }
+    return;
+}
+
+int margin(string s){
+    return (win_wi/pix_char-s.size())/2;
+}
+
+void cen_out(string s){
+
+    int ot= margin(s);
+    for(int i=0;i<ot;i++){
+        cout<<" ";
+    }
+
+    cout<<s;
+
+
+}
+
+void updateScreen(){
+    int i, j;
+    
+    for(i=0;i<he+4+3;i++) cout<<UP;
+
+    cout<<GRA;
+    cout<<" +=";
+    for(int i=0; i<wi*2-1; i++) cout<<'=';
+    cout<<"=+ ";
+    cout<<'\n';
+    for(i=0;i<he;i++){
+
+        cout<<GRA<<mar_left;
+        for(j=0;j<wi;j++){
+            cout<<GRA;
+            bool outed=0;
+            point curpo;
+            curpo.i=i;
+            curpo.j=j;
+            if(fi_mon!=u && fi_mon==curpo){
+                cout<<CYA<<BOLD<<"@"<<" ";
+                outed=1;
+                continue;
+            }
+            else if(se_mon!=u && se_mon==curpo){
+                cout<<BLU<<BOLD<<"@"<<" ";
+                outed=1;
+                continue;
+            }
+            else if(gam==curpo){
+                cout<<YEL<<BOLD<<"C"<<" ";
+                outed=1;
+                continue;
+            }
+            if(!outed){
+
+
+                if(arr[i][j]==0) cout<<GRA<<"."<<" ";
+                else if(arr[i][j]==1) cout<<PUR<<"H"<<" "; 
+                else if(arr[i][j]==2) cout<<GRE<<"*"<<" ";
+                else if(arr[i][j]==5) cout<<RED<<BOLD<<"6"<<" ";
+
+
+            }
+            
+            
+        }
+        cout<<GRA<<"| ";
+        cout<<'\n';
+    }
+    
+    cout<<GRA;
+    cout<<GRA<<" +=";
+    for(int i=0; i<2*wi-1; i++) cout<<'=';
+    cout<<"=+ ";
+
+    cout<<'\n';
+    cout<<GRA<<mar_left;
+    cout<<'\n';
+    cout<<GRA<<mar_left;
+    cout<<YEL;
+    string ys="YOUR SCORE="+to_string(curscore);
+    cen_out(ys);
+    cout<<'\n';
+    cout<<GRA<<mar_left;
+    string ll="LIVES LEFT: "+to_string(lives);
+    cout<<RED;
+    cen_out(ll);
+
+    cout<<'\n';
+    for(int i=0;i<1;i++){
+        cout<<GRA<<mar_left;
+        cout<<'\n';
+    }
+    cout<<GRA;
+    cout<<" +=";
+    for(int i=0; i<wi*2-1; i++) cout<<'=';
+    cout<<"=+ ";
+
+    for(int i=0;i<4;i++) cout<<UP;
+    for(int i=0;i<4;i++){
+        
+        for(int i=0;i<wi*2+mar_left.size()-1;i++) cout<<RIG;
+        cout<<GRA<<" | ";
+        cout<<'\n';
+    }
+
+
+
+    cout<<flush;
+}
+
+void scr_upd_tim(){
+    while(gameContinue){
+        updateScreen();
+    }
+}
+
+point next_point(int dir){
+    point x;
+    switch (dir){
+
+        case 0:
+            x.i=-1;
+            x.j=0;
+            break;
+        case 1:
+            x.i=0;
+            x.j=1;
+            break;
+        case 2:
+            x.i=1;
+            x.j=0;
+            break;
+        case 3:
+            x.i=0;
+            x.j=-1;
+            break;
+
+
+
+    }
+    return x;
 }
 
 point fastest_way(point s, point e){
@@ -518,8 +694,6 @@ point fastest_way(point s, point e){
     if(s==e) return tmp_p;
     
     vector< vector<point> > used(he, vector< point >(wi, u) );
-    
-    // used[s.i][s.j]=0;
 
     point hod[4];
 
@@ -614,33 +788,6 @@ void mon_bfs(){
 
 }
 
-point next_point(int dir){
-    point x;
-    switch (dir){
-
-        case 0:
-            x.i=-1;
-            x.j=0;
-            break;
-        case 1:
-            x.i=0;
-            x.j=1;
-            break;
-        case 2:
-            x.i=1;
-            x.j=0;
-            break;
-        case 3:
-            x.i=0;
-            x.j=-1;
-            break;
-
-
-
-    }
-    return x;
-}
-
 bool sec_mon_valid(point p){
     if( valid(p) && !(p.i==14 && ( p.j==5 || p.j==22 )) && !(p.i==4 && (p.j==6 || p.j==21) ) && !(p.i==5 && (p.j==5 || p.j==22) ) ) return 1;
     return 0;
@@ -678,7 +825,6 @@ void mon_left(int &dir){
 
 void mon_thr(){
     
-    // bool mon2placed=0;
     int m_l_dir=0;//0 вверх | 1 вправо | 2 вниз | 3 влево
     while(gameContinue){
         
@@ -710,164 +856,8 @@ void mon_thr(){
 
 }
 
-void dopen(){
-    for(int j=11;j<=16;j++) arr[12][j]=0;
-}
-
-void dclose(){
-    for(int j=11;j<=16;j++) arr[12][j]=1;
-}
-
-void character(){
-    // cout<<-1;
-    dir=1; //0 вверх | 1 вправо | 2 вниз | 3 влево
-
-    while (gameContinue){
-        
-
-        // BYTE helpar[256];
-        // for(int i=0;i<256;i++)helpar[i]=0; 
-        // GetKeyboardState(helpar);
-        // int p;
-        // for (int _i = 0; _i < 5; _i++)
-        // for(int i=0;i<256;i++){
-        //     // cout<<helpar[i]<<" ";
-        //     if((int)helpar[i] & 0x8000) p=i;
-        // }
-        
-        // // cout << ((short)GetKeyState('D') & 0x8000) << endl;
-        // if ((short)GetKeyState('W') & 0x8000)
-        //         goup();
-        // else if ((short)GetKeyState('S') & 0x8000)
-        //         godown();
-        // else if ((short)GetKeyState('A') & 0x8000)
-        //         goleft();
-        // else if ((short)GetKeyState('D') & 0x8000)
-        //         goright();
-        // else if ((short)GetKeyState(VK_ESCAPE) & 0x8000)
-        // {
-        //         gameContinue=0;
-        //         return;
-        // }
-        
 
 
-        switch(dir){
-            case 0:
-                goup();
-                break;
-            case 2:
-                godown();
-                break;
-            case 3:
-                goleft();
-                break;
-            case 1:
-                goright();
-                break;
-        }
-
-
-
-
-
-        // updateScreen();
-        // SetConsoleMode(GetStdHandle(STD_INPUT_HANDLE) ,ENABLE_ECHO_INPUT);
-        // BlockInput(true);
-        Sleep(wait_gamer);
-        // BlockInput(false);
-        // SetConsoleMode(GetStdHandle(STD_INPUT_HANDLE) ,ENABLE_ECHO_INPUT);
-        // if (!gameContinue.is_lock_free()) return;
-    }
-    return;
-}
-
-void door_time(){
-    while(gameContinue){
-
-        dopen();
-        // door=0;
-        // updateScreen();
-        Sleep(dop);
-        if(curtime<cycle*3) curtime+=dop;
-        
-        // door=1;
-        dclose();
-        // updateScreen();
-        Sleep(dcl);
-        if(curtime<cycle*3) curtime+=dcl;
-
-        // if (!gameContinue.is_lock_free()) return;
-
-
-    }
-}
-
-void scr_upd_tim(){
-    while(gameContinue){
-        updateScreen();
-        // Sleep(10);
-        // if (!gameContinue.is_lock_free()) return;
-    }
-}
-
-void input_key(){
-    while(gameContinue){
-        
-    
-        switch(getch()){
-                // case 246:
-                // case 214:
-                case 87:
-                case 119:
-                    if(arr[gam.i-1][gam.j]!=1){
-                        dir=0;
-                        // FlushConsoleInputBuffer(GetStdHandle(STD_INPUT_HANDLE) );
-                    }
-                    
-                    break;
-                // case 219:
-                // case 251:
-                case 83:
-                case 115:
-                    if(arr[gam.i+1][gam.j]!=1){
-                        dir=2;
-                        // FlushConsoleInputBuffer(GetStdHandle(STD_INPUT_HANDLE) );
-                    }
-                    
-                    break;
-                // case 212:
-                // case 244:
-                // case 192:
-                case 65:
-                case 97:
-                    if( (gam.j>=0 && arr[gam.i][gam.j-1]!=1) || (gam.i==14 && gam.j==0 )  ){
-                        dir=3;
-                        // FlushConsoleInputBuffer(GetStdHandle(STD_INPUT_HANDLE) );
-                    }
-                    
-                    break;
-                // case 194:
-                // case 226:
-                case 68:
-                case 100:
-                    if( (gam.j+1<wi && arr[gam.i][gam.j+1]!=1) || (gam.i==14 && gam.j==wi-1) ){
-                        dir=1;
-                        // FlushConsoleInputBuffer(GetStdHandle(STD_INPUT_HANDLE) );
-                    }
-                    
-                    break;
-                case 27:
-                    gameContinue=0;
-                    death=-1;
-                    break;
-                    // return;
-            }
-
-            // if (!gameContinue.is_lock_free()) return;
-
-    }
-}
 
 string space_suf_del(string s){
     int k=s.size();
@@ -893,7 +883,6 @@ void leader_board(string p_name){
     
     vector< pair< int, string >  > results;
     string s;
-    // cout<<"1";
     while(getline(fin, s)){
         string name;
         int score;
@@ -912,7 +901,6 @@ void leader_board(string p_name){
         
         results.push_back({score, name});
 
-        // cout<<name<<" "<<score<<endl;
     }
     fin.close();
     results.push_back( {curscore, p_name} );
@@ -922,7 +910,6 @@ void leader_board(string p_name){
     for(int i=0; i<results.size(); i++){
         string tmstr=results[i].second;
         if(tmstr.size()>=3 && tmstr.substr( tmstr.size()-3, 3 ) == "..." ){
-            // cout<<"abo | "<<tmstr.substr( tmstr.size()-3, 3 )<<endl;
             tmstr=tmstr.substr(0, tmstr.size()-3);
         }
         tmstr=space_suf_del(tmstr);
@@ -930,7 +917,6 @@ void leader_board(string p_name){
         if(results[i].second.size()!=0){
             results_tmp.push_back(results[i]);
         }
-        // cout<<tmstr<<endl<<endl;
     }
 
     results=results_tmp;
@@ -954,15 +940,7 @@ void leader_board(string p_name){
 void leave(){
     FlushConsoleInputBuffer(GetStdHandle(STD_INPUT_HANDLE) );
     system("cls");
-    // cout<<mar_left;
-    
-    // for(int i=0;i<3;i++){
-    //     cout<<'\n';
-    // }
-    // cout<<flush;
 
-    
-    // cout<<name_mar;
     cout<<BLU;
     string eyn="ENTER YOUR NAME:";
     cen_out(eyn);
@@ -972,15 +950,12 @@ void leave(){
     cen_out(ut10s);
     cout<<BLU;
     cout<<'\n';
-    // cout<<"ENTER YOUR NAME:"<<'\n'<<BLU<<flush;
     int name_mar=margin(eyn);
-    // cout<<"|";
     for(int i=0;i<name_mar;i++) cout<<' ';
     cout<<flush;
     string p_name;
     getline(cin, p_name);
     
-    // p_name=space_suf_del(p_name);
 
     while(p_name.size()==0){
 
@@ -998,9 +973,7 @@ void leave(){
         cen_out(ut10s);
         cout<<BLU;
         cout<<'\n';
-        // cout<<"ENTER YOUR NAME:"<<'\n'<<BLU<<flush;
         int name_mar=margin(eyn);
-        // cout<<"|";
         for(int i=0;i<name_mar;i++) cout<<' ';
         cout<<flush;
         getline(cin, p_name);
@@ -1010,7 +983,6 @@ void leave(){
         
     }
 
-    // p_name=space_suf_del(p_name);
 
     if(p_name.size()>=10){
         p_name = p_name.substr( 0, 10 )+"...";
@@ -1019,7 +991,6 @@ void leave(){
     system("cls");
 
     string go="GAME OVER";
-    // cout<<RED<<"GAME OVER"<<'\n';
     cout<<RED;
     cen_out(go);
     cout<<'\n';
@@ -1038,19 +1009,15 @@ void leave(){
 
     cout<<'\n'<<'\n';
 
-    // cout<<CYA<<'\n'<<"     "<<"CURRENT LEADERBOARD:"<<'\n'<<'\n';
 
     int malen=0;
 
     for(int i=0;i<lbsize;i++){
         malen=max(malen, int( lbscore[i].first.size() )  );
     }
-    // cout<<malen<<endl;
 
     for(int i=0;i<lbsize;i++){
-        // cout<<"      ";
         for(int i=0;i<mar_lb; i++) cout<<' ';
-        // cout<<BLU;
         cout<<BLU<<lbscore[i].first;
 
         for(int j=0;j<malen-lbscore[i].first.size(); j++){
@@ -1059,38 +1026,20 @@ void leave(){
 
         cout<<"   "<<GRE<<lbscore[i].second<<'\n';
     }
+
+    cout<<'\n';
+    cout<<'\n';
+
     cout<<flush;
+
+
+
+    getch();
     
 
 }
 
-void cherry_spawn(){
-    
-    while(gameContinue){
-        Sleep(cherrySleep);
-        static std::uniform_int_distribution<int> uidi(1,he-2+1);
-        static std::uniform_int_distribution<int> uidj(1,wi-2+1);
-        int ib=uidi(rng);
-        int jb=uidj(rng);
-        for(int i=jb;i<he;i++){
-            for(int j=jb;j<wi;j++){
-                if(i>=12 && i<=16 && j>=10 && j<=17) continue;
-                if(arr[i][j]==0 /*|| arr[i][j]==2*/){
-                    arr[i][j]=5;
-                    ib=i;
-                    jb=j;
-                    i=he;
-                    j=wi;
-                    
-                }
-            }
-        }
-        Sleep(cherrySleep);
-        arr[ib][jb]=0;
-    }
-}
-
-void threads_begin(){
+void threads_game(){
 
     thread cha(character);
     thread inp(input_key);
@@ -1098,10 +1047,8 @@ void threads_begin(){
     thread screen(scr_upd_tim);
     thread mon(mon_thr);
     thread cherry(cherry_spawn);
-    // thread scor(score_check);
 
     screen.join();
-    // scor.detach();
     cherry.detach();
     door.detach();
     cha.detach();
@@ -1134,8 +1081,6 @@ void var_reset(){
 
 }
 
-
-
 void wait_for_input(){
 
     if(getch()){
@@ -1144,8 +1089,6 @@ void wait_for_input(){
     }
 
 }
-
-
 
 void letters_print(){
 
@@ -1160,9 +1103,6 @@ void letters_print(){
             else for(int tt=0;tt<x_ch;tt++) www+=" ";
         }
         cout<<let_col[col_k%4];
-        // cen_out(www);
-        // cout<<'\n';
-        // cout<<RED;
         for(int kkk=0; kkk<y_ch;kkk++){
             for(int j=0;j<23;j++) cout<<" ";
             cout<<www;
@@ -1173,7 +1113,6 @@ void letters_print(){
     }
 
     for(int i=0;i<char_he;i++){
-        // string as="";
 
         string aaa="";
         for(int j=0;j<char_wi;j++){
@@ -1182,7 +1121,6 @@ void letters_print(){
             }
             else for(int tt=0;tt<x_ch;tt++) aaa+=" ";
         }
-        // as+=aaa;
         
 
         string sss="";
@@ -1194,8 +1132,6 @@ void letters_print(){
         }
         
 
-        // for(int j=0;j<14;j++) cout<<" ";
-        // as+="            ";
 
         string ddd="";
         for(int j=0;j<char_wi;j++){
@@ -1204,10 +1140,6 @@ void letters_print(){
             }
             else for(int tt=0;tt<x_ch;tt++) ddd+=" ";
         }
-        // as+=ddd;
-        
-        // cout<<'\n';
-        // cen_out(as);
         
         for(int kkk=0; kkk<y_ch;kkk++){
             cout<<let_col[(col_k+1)%4];
@@ -1246,7 +1178,6 @@ void text_print(){
         cout<<'\n';
         cout<<'\n';
         cout<<'\n';
-        // cout<<'\n';
         cout<<CYA;
         cen_out(C);
         cout<<'\n';
@@ -1268,17 +1199,50 @@ void threads_menu(){
 
 }
 
+void transition(){
+
+    for(int kt=2;kt>=0;kt--){
+        updateScreen();
+
+        for(int i=0;i<32;i++){
+            cout<<UP;
+        }
+
+        for(int i=0;i<char_he;i++){
+            string nu="";
+            for(int j=0;j<char_wi;j++){
+                if(nums[kt][i][j]==1){
+                    for(int tt=0;tt<x_nu;tt++) nu+="@";
+                }
+                else for(int tt=0;tt<x_nu;tt++) nu+=RIG;
+            }
+            cout<<num_col[kt];
+            for(int kkk=0; kkk<y_nu;kkk++){
+                for(int j=0;j<18;j++) cout<<RIG;
+                cout<<nu;
+                cout<<'\n';
+            }
+            cout<<flush;
+            
+            
+        }
+        Sleep(1000);
+    }
+    
+
+    
+
+}
+
 void start_menu(){
 
     
     threads_menu();
-    
 
 
 }
 
 int main(){
-    // cout<<GRAb;
     
     ios_base::sync_with_stdio(0);
     cin.tie(0);
@@ -1297,6 +1261,7 @@ int main(){
     u.i=-1;
     u.j=-1;
 
+    // убирает скролл бар
     HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
     CONSOLE_SCREEN_BUFFER_INFO scrBufferInfo;
     GetConsoleScreenBufferInfo(hOut, &scrBufferInfo);
@@ -1307,22 +1272,22 @@ int main(){
     newSize.X = scrBufferWidth;
     newSize.Y = winHeight;
     SetConsoleScreenBufferSize(hOut, newSize);
+    //
 
+    // задает размер окна
     HWND hwnd = GetConsoleWindow();
     ShowScrollBar(hwnd, SB_BOTH, 0);
     RECT ConsoleRect;
     GetWindowRect(hwnd, &ConsoleRect);
     MoveWindow(hwnd, ConsoleRect.left, ConsoleRect.top, win_wi, win_he, TRUE);
-    // cin.sync();
+    //
     
-    // cout<<'\n';
-
-    
-    // if (!gameContinue.is_lock_free()) return 10;
-
+    var_reset();
     start_menu();
     
     while(lives!=0){
+        var_reset();
+        transition();
         var_reset();
 
         system("cls");
@@ -1332,7 +1297,7 @@ int main(){
         
         
         
-        threads_begin();
+        threads_game();
 
         if(death==-1){
             break;
@@ -1345,7 +1310,6 @@ int main(){
         cout<<'\n';
         
         string yd="YOU DIED";
-        // cout<<"YOU DIED\n";
         cout<<GRA<<mar_left;
         cout<<RED;
         cen_out(yd);
@@ -1356,14 +1320,13 @@ int main(){
         string ll="LIVES LEFT: "+to_string(lives);
         cen_out(ll);
         cout<<'\n';
-        // cout<<"Lives left: "<<lives<<'\n';
         cout<<flush;
-        Sleep(3000);
+        Sleep(1000);
 
     }
     system("cls");
     leave();
-    Sleep(100000);
+    
     return 0;
 
     
@@ -1386,6 +1349,4 @@ int main(){
     return 0;
 
 
-    // mon.detach();
-    // t.detach();
 }
