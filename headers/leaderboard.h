@@ -39,11 +39,11 @@ void leader_board(string p_name){
     
     
     
-    vector< pair< int, string >  > results;
+    vector< pair< long long, string >  > results;
     string s;
     while(getline(fin, s)){
         string name;
-        int score;
+        long long score;
         string rev=s;
         reverse(rev.begin(), rev.end());
         auto tm=rev.find(' ');
@@ -52,7 +52,13 @@ void leader_board(string p_name){
         name=s.substr(0, ind_sp);
         cout<<ind_sp<<" "<<name<<endl;
         try{
-            score=stoi(s.substr(ind_sp+1, s.size()-ind_sp-1));
+            try{
+                score=stoll(s.substr(ind_sp+1, s.size()-ind_sp-1));
+            }
+            catch(std::out_of_range){
+                continue;
+            }
+            
         } catch( std::invalid_argument ){
             continue;
         }
@@ -63,7 +69,7 @@ void leader_board(string p_name){
     fin.close();
     results.push_back( {curscore, p_name} );
 
-    vector< pair< int, string >  > results_tmp;
+    vector< pair< long long, string >  > results_tmp;
 
     for(int i=0; i<results.size(); i++){
         string tmstr=results[i].second;
@@ -80,7 +86,7 @@ void leader_board(string p_name){
     results=results_tmp;
     
 
-    sort( results.begin(), results.end(), greater<pair<int, string> >() );
+    sort( results.begin(), results.end(), greater<pair<long long, string> >() );
     int n=results.size();
 
     ofstream fout;

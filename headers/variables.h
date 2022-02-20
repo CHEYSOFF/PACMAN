@@ -51,9 +51,9 @@ const int wait_gamer=300;
 const int cherrySleep=40000;
 point fi_mon;
 point se_mon;
-vector< pair< string, int > > lbscore;
+vector< pair< string, long long > > lbscore;
 int lbsize=10;
-int lives=3;
+int lives=0;
 const int mo_co=2;
 vector< bool > monplaced(mo_co+1, 0);
 int out_le=wi;// для центрирования вывода
