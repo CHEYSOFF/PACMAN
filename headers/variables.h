@@ -59,7 +59,7 @@ const int mo_co=2;
 vector< bool > monplaced(mo_co+1, 0);
 int out_le=wi;// для центрирования вывода
 string mar_left=" | ";
-static atomic< bool > gameContinue = true;
+atomic< bool > gameContinue = true;
 atomic< int > death;//1 съеден монстром || -1 лив || 0 жив
 int win_wi=460;
 int win_he=650;
@@ -70,12 +70,13 @@ int char_wi=5;
 int col_k=0;
 string let_col[4]={BLU, RED, YEL, GRE};
 string num_col[3]={RED, YEL, GRE};
-static atomic< bool > menuContinue = true;
+atomic< bool > menuContinue = true;
 int x_ch=2;//коэффицент растяжения букв по горизонтали (при изменение коэффицента с 2 все ломается :( )
 int y_ch=1;//коэффицент растяжения букв по вертикали
 int x_nu=5;
 int y_nu=3;
-static atomic< bool > energAct=0;
+atomic< bool > energAct=0;
+
 point se_mon_start;
 point fi_mon_start;
 atomic< int > energCol=0;
