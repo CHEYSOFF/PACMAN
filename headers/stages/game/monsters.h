@@ -231,6 +231,12 @@ void mon_left(int &dir){
 
 }
 
+
+
+void mon_corner(){
+
+}
+
 void mon_thr(){
     
     int m_l_dir=0;//0 вверх | 1 вправо | 2 вниз | 3 влево

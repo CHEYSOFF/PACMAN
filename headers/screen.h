@@ -116,7 +116,7 @@ void updateScreen(){
         cout<<energColArr[energCol];
         cen_out(eia);
         // for(int i=0;i<4;i++) cout<<' ';// закрашивание
-        cout<<'\n';
+        // cout<<'\n';
     }
     else{
         for(int i=0;i<2*wi;i++){

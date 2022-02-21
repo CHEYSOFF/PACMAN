@@ -66,6 +66,8 @@ int main(){
     se_mon_start.j=11;
     fi_mon_start.i=14;
     fi_mon_start.j=12;
+    th_mon_start.i=14;
+    th_mon_start.j=13;
 
     // убирает скролл бар
     HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);

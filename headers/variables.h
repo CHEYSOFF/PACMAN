@@ -52,6 +52,7 @@ const int cherrySleep=40000;
 const int energizerSleep=20000;
 point fi_mon;
 point se_mon;
+point th_mon;
 vector< pair< string, long long > > lbscore;
 int lbsize=10;
 int lives=3;
@@ -80,6 +81,7 @@ atomic< int > energTime=0;
 
 point se_mon_start;
 point fi_mon_start;
+point th_mon_start;
 atomic< int > energCol=0;
 string energColArr[2]={GRE, RED};
 const int morg=500;
