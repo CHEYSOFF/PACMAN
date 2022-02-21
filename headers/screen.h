@@ -110,10 +110,13 @@ void updateScreen(){
     
     
     if(energAct==1){
-        string eia="ENERGIZER IS ACTIVE";
+        
+        string nrgtime=to_string(energTime/1000);
+        string eia="ENERGIZER IS ACTIVE "+nrgtime;
         cout<<energColArr[energCol];
         cen_out(eia);
-        // cout<<'\n';
+        // for(int i=0;i<4;i++) cout<<' ';// закрашивание
+        cout<<'\n';
     }
     else{
         for(int i=0;i<2*wi;i++){

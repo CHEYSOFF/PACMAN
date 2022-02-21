@@ -76,6 +76,7 @@ int y_ch=1;//коэффицент растяжения букв по верти�
 int x_nu=5;
 int y_nu=3;
 atomic< bool > energAct=0;
+atomic< int > energTime=0;
 
 point se_mon_start;
 point fi_mon_start;
