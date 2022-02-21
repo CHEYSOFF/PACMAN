@@ -85,6 +85,10 @@ point th_mon_start;
 atomic< int > energCol=0;
 string energColArr[2]={GRE, RED};
 const int morg=500;
+atomic< int > moncol=0;
+string fi_mon_col[2]={BLU, RED};
+string se_mon_col[2]={BLU, CYA};
+string th_mon_col[2]={BLU, GRE};
 
 
 

@@ -445,7 +445,8 @@ void mon_thr(){
     
     int m_l_dir=0;//0 вверх | 1 вправо | 2 вниз | 3 влево
     while(gameContinue){
-        
+        moncol++;
+        moncol=moncol%2;
         if( curtime >= (cycle)*0 ){
             if( !monplaced[1] ){
                 fi_mon=fi_mon_start;

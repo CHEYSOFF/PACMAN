@@ -54,17 +54,20 @@ void updateScreen(){
             curpo.i=i;
             curpo.j=j;
             if(fi_mon!=u && fi_mon==curpo){
-                cout<<BLU<<BOLD<<"@"<<" ";
+                cout<<fi_mon_col[moncol];
+                cout<<BOLD<<"@"<<" ";
                 outed=1;
                 continue;
             }
             else if(se_mon!=u && se_mon==curpo){
-                cout<<BLU<<BOLD<<"@"<<" ";
+                cout<<se_mon_col[moncol];
+                cout<<BOLD<<"@"<<" ";
                 outed=1;
                 continue;
             }
             else if(th_mon!=u && th_mon==curpo){
-                cout<<BLU<<BOLD<<"@"<<" ";
+                cout<<th_mon_col[moncol];
+                cout<<BOLD<<"@"<<" ";
                 outed=1;
                 continue;
             }
