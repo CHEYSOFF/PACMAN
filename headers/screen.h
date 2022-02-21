@@ -63,6 +63,11 @@ void updateScreen(){
                 outed=1;
                 continue;
             }
+            else if(th_mon!=u && th_mon==curpo){
+                cout<<BLU<<BOLD<<"@"<<" ";
+                outed=1;
+                continue;
+            }
             else if(gam==curpo){
                 cout<<YEL<<BOLD<<"C"<<" ";
                 outed=1;

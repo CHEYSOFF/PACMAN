@@ -191,7 +191,7 @@ point fastest_way(point s, point e){
 
 void mon_bfs(){
 
-    point mon_dir=fastest_way(fi_mon, gam );
+    point mon_dir=fastest_way( fi_mon, gam );
     if(mon_dir==u){
         return;
     }
@@ -231,10 +231,214 @@ void mon_left(int &dir){
 
 }
 
+point bfs(point s, point e){
+    // map< point, int > ways;
+    
+    queue< point > q;
+    q.push (s);
+    point tmp_p;
+    tmp_p.i=0;
+    tmp_p.j=0;
+    if(s==e) return tmp_p;
+    
+    vector< vector<point> > used(he, vector< point >(wi, u) );
 
+    point hod[4];
+
+    point tmp;
+
+    tmp.i=-1;
+    tmp.j=0;
+    hod[0]=tmp;
+    // ways[tmp]=0;
+
+    tmp.i=0;
+    tmp.j=1;
+    hod[1]=tmp;
+    // ways[tmp]=1;
+
+    tmp.i=1;
+    tmp.j=0;
+    hod[2]=tmp;
+    // ways[tmp]=2;
+
+    tmp.i=0;
+    tmp.j=-1;
+    hod[3]=tmp;
+    // ways[tmp]=3;
+
+
+    for(;!q.empty();){
+
+        point from=q.front();
+        q.pop();
+
+        for(int kt=0; kt<4;kt++){
+
+            point to=from+hod[kt];
+            to.j+=wi;
+            to.j%=wi;
+            // if( to.i==14 && to.j==-1 ){
+            //     to.j=27;
+            // }
+            // else if( to.i==14 && to.j==28 ){
+            //     to.j=0;
+            // }
+            
+
+            if( valid(to) && used[to.i][to.j]==u){
+                used[to.i][to.j]=from;
+                q.push(to);
+
+
+                if(to==e){
+
+                    point nev=to;
+                    for(;;){
+                        
+                        if(nev==u) return u;
+                        
+                        if(used[nev.i][nev.j]==s){
+                            point ans=nev-s;
+                            return(ans); 
+                        
+                            
+                        }
+
+                        nev=used[nev.i][nev.j];
+                    }
+
+                }
+
+
+
+            }
+
+
+        }
+
+
+
+    }
+
+        
+    return u;
+}
+
+point th_mon_bfs(point s, point e){
+    // map< point, int > ways;
+    int dist=0;
+    queue< point > q;
+    q.push (s);
+    point tmp_p;
+    tmp_p.i=0;
+    tmp_p.j=0;
+    if(s==e) return tmp_p;
+    
+    vector< vector<point> > used(he, vector< point >(wi, u) );
+
+    point hod[4];
+
+    point tmp;
+
+    tmp.i=-1;
+    tmp.j=0;
+    hod[0]=tmp;
+    // ways[tmp]=0;
+
+    tmp.i=0;
+    tmp.j=1;
+    hod[1]=tmp;
+    // ways[tmp]=1;
+
+    tmp.i=1;
+    tmp.j=0;
+    hod[2]=tmp;
+    // ways[tmp]=2;
+
+    tmp.i=0;
+    tmp.j=-1;
+    hod[3]=tmp;
+    // ways[tmp]=3;
+
+
+    for(;!q.empty();){
+
+        point from=q.front();
+        q.pop();
+
+        for(int kt=0; kt<4;kt++){
+
+            point to=from+hod[kt];
+            to.j+=wi;
+            to.j%=wi;
+            // if( to.i==14 && to.j==-1 ){
+            //     to.j=27;
+            // }
+            // else if( to.i==14 && to.j==28 ){
+            //     to.j=0;
+            // }
+            
+
+            if( valid(to) && used[to.i][to.j]==u){
+                used[to.i][to.j]=from;
+                q.push(to);
+
+
+                if(to==e){
+                    
+                    point nev=to;
+                    for(;;){
+
+                        dist++;
+
+                        if(nev==u) return u;
+                        
+                        if(used[nev.i][nev.j]==s){
+                            point ans=nev-s;
+                            if(energAct==0 && dist>8){
+                                return(ans); 
+                            }
+                            else{
+                                
+                                point l_d_corner;
+                                l_d_corner.i=he-1-1;
+                                l_d_corner.j=1;
+
+                                return bfs(s, l_d_corner); 
+                                
+                            }
+                            
+                        }
+
+                        nev=used[nev.i][nev.j];
+                    }
+
+                }
+
+
+
+            }
+
+
+        }
+
+
+
+    }
+
+        
+    return u;
+}
 
 void mon_corner(){
-
+    point mon_dir=th_mon_bfs( th_mon, gam );
+    if(mon_dir==u){
+        return;
+    }
+    point newpos=th_mon+mon_dir;
+    th_mon=newpos;
+    pacmandeath();
 }
 
 void mon_thr(){
@@ -242,27 +446,35 @@ void mon_thr(){
     int m_l_dir=0;//0 вверх | 1 вправо | 2 вниз | 3 влево
     while(gameContinue){
         
-        if(curtime >= (cycle)*0 ){
+        if( curtime >= (cycle)*0 ){
             if( !monplaced[1] ){
-                fi_mon.i=14;
-                fi_mon.j=12;
+                fi_mon=fi_mon_start;
                 monplaced[1]=1;
             }
             
             mon_bfs();
         }
         
-        if(curtime >= (cycle)*1 ){
+        if( curtime >= (cycle)*1 ){
 
             if( !monplaced[2] ){
-                se_mon.i=14;
-                se_mon.j=11;
+                se_mon=se_mon_start;
                 monplaced[2]=1;
             }
             
             mon_left(m_l_dir);
             
         } 
+
+        if( curtime >= (cycle)*2 ){
+            if( !monplaced[3] ){
+                th_mon=th_mon_start;
+                monplaced[3]=1;
+            }
+            mon_corner();
+        }
+
+
         Sleep(wait_ghost);
         
 

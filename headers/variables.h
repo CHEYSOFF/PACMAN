@@ -56,7 +56,7 @@ point th_mon;
 vector< pair< string, long long > > lbscore;
 int lbsize=10;
 int lives=3;
-const int mo_co=2;
+const int mo_co=3;
 vector< bool > monplaced(mo_co+1, 0);
 int out_le=wi;// для центрирования вывода
 string mar_left=" | ";

@@ -73,7 +73,7 @@ void input_key(){
 }
 
 void pacmandeath(){
-    if(se_mon==gam || fi_mon==gam){
+    if(se_mon==gam || fi_mon==gam || th_mon==gam){
 
         if(energAct==0){
             gameContinue=0;
@@ -84,15 +84,10 @@ void pacmandeath(){
         }
         else{
 
-            if(se_mon==gam){
-                se_mon=se_mon_start;
-                addScore(gam);
-            }
-            else if(fi_mon==gam){
-                fi_mon=fi_mon_start;
-                addScore(gam);
-            }
-
+            if(se_mon==gam) se_mon=se_mon_start;
+            else if(fi_mon==gam) fi_mon=fi_mon_start;
+            else if(th_mon==gam) th_mon=th_mon_start;
+            addScore(gam);
         }
         
     }

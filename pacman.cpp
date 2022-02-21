@@ -44,13 +44,7 @@ int main(){
 
     // printf("\e[?25l");
 
-    HANDLE hStdOut = NULL;
-    CONSOLE_CURSOR_INFO curInfo;
 
-    hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
-    GetConsoleCursorInfo(hStdOut, &curInfo);
-    curInfo.bVisible = FALSE;
-    SetConsoleCursorInfo(hStdOut, &curInfo);
 
 
 
@@ -69,26 +63,9 @@ int main(){
     th_mon_start.i=14;
     th_mon_start.j=13;
 
-    // убирает скролл бар
-    HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
-    CONSOLE_SCREEN_BUFFER_INFO scrBufferInfo;
-    GetConsoleScreenBufferInfo(hOut, &scrBufferInfo);
-    short winHeight = scrBufferInfo.srWindow.Bottom - scrBufferInfo.srWindow.Top + 1;
-    short scrBufferWidth = scrBufferInfo.dwSize.X;        
-    short scrBufferHeight = scrBufferInfo.dwSize.Y;        
-    COORD newSize;
-    newSize.X = scrBufferWidth;
-    newSize.Y = winHeight;
-    SetConsoleScreenBufferSize(hOut, newSize);
-    //
-
-    // задает размер окна
-    HWND hwnd = GetConsoleWindow();
-    ShowScrollBar(hwnd, SB_BOTH, 0);
-    RECT ConsoleRect;
-    GetWindowRect(hwnd, &ConsoleRect);
-    MoveWindow(hwnd, ConsoleRect.left, ConsoleRect.top, win_wi, win_he, TRUE);
-    //
+    hideCursor();
+    hideScrollBar();
+    setWindowSize();
     
     var_reset();
     start_menu();

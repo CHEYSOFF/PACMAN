@@ -49,6 +49,7 @@ void var_reset(){
     gameContinue=1;
     fi_mon=u;
     se_mon=u;
+    th_mon=u;
     death=0;
     arr[gam.i][gam.j]=0;
     for( int i=0; i<mo_co+1; i++ ){
@@ -63,5 +64,40 @@ void var_reset(){
 
     return;
 
+}
+
+void hideScrollBar(){
+    // убирает скролл бар
+    HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+    CONSOLE_SCREEN_BUFFER_INFO scrBufferInfo;
+    GetConsoleScreenBufferInfo(hOut, &scrBufferInfo);
+    short winHeight = scrBufferInfo.srWindow.Bottom - scrBufferInfo.srWindow.Top + 1;
+    short scrBufferWidth = scrBufferInfo.dwSize.X;        
+    short scrBufferHeight = scrBufferInfo.dwSize.Y;        
+    COORD newSize;
+    newSize.X = scrBufferWidth;
+    newSize.Y = winHeight;
+    SetConsoleScreenBufferSize(hOut, newSize);
+    //
+}
+
+void setWindowSize(){
+    // задает размер окна
+    HWND hwnd = GetConsoleWindow();
+    ShowScrollBar(hwnd, SB_BOTH, 0);
+    RECT ConsoleRect;
+    GetWindowRect(hwnd, &ConsoleRect);
+    MoveWindow(hwnd, ConsoleRect.left, ConsoleRect.top, win_wi, win_he, TRUE);
+    //
+}
+
+void hideCursor(){
+    HANDLE hStdOut = NULL;
+    CONSOLE_CURSOR_INFO curInfo;
+
+    hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
+    GetConsoleCursorInfo(hStdOut, &curInfo);
+    curInfo.bVisible = FALSE;
+    SetConsoleCursorInfo(hStdOut, &curInfo);
 }
 
