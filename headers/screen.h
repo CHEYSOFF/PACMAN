@@ -55,18 +55,21 @@ void updateScreen(){
             curpo.j=j;
             if(fi_mon!=u && fi_mon==curpo){
                 cout<<fi_mon_col[moncol];
+                if(gh_white) cout<<GRA;
                 cout<<BOLD<<"@"<<" ";
                 outed=1;
                 continue;
             }
             else if(se_mon!=u && se_mon==curpo){
                 cout<<se_mon_col[moncol];
+                if(gh_white) cout<<GRA;
                 cout<<BOLD<<"@"<<" ";
                 outed=1;
                 continue;
             }
             else if(th_mon!=u && th_mon==curpo){
                 cout<<th_mon_col[moncol];
+                if(gh_white) cout<<GRA;
                 cout<<BOLD<<"@"<<" ";
                 outed=1;
                 continue;

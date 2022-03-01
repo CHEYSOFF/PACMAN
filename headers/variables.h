@@ -89,6 +89,7 @@ atomic< int > moncol=0;
 string fi_mon_col[2]={BLU, RED};
 string se_mon_col[2]={BLU, CYA};
 string th_mon_col[2]={BLU, GRE};
+bool gh_white=0;
 
 
 
