@@ -49,13 +49,15 @@ atomic< int > curtime=0;
 const int cycle=dop+dcl;
 
 const int start_wait_ghost=500;
-atomic< int > wait_ghost=500;
+atomic< int > wait_ghost=400;
 atomic< int > wait_gamer=250;
 atomic< double > ghost_speed_modifier=1.0;
-atomic< double > ghost_sp_mod_inc=0.1;
+atomic< double > ghost_sp_mod_inc=0.05;
 atomic< int > round_num=1;
 const double mon_sp_cap_mod=1.1;
 
+
+const int cherryCost=35;
 const int cherrySleep=40000;
 const int energizerSleep=20000;
 point fi_mon;
@@ -71,7 +73,7 @@ string mar_left=" | ";
 atomic< bool > gameContinue = true;
 atomic< int > death;//1 съеден монстром || -1 лив || 0 жив
 int win_wi=460;
-int win_he=650;
+int win_he=700;
 int pix_char=8;
 point gam;
 int char_he=7;
