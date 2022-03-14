@@ -39,15 +39,23 @@ point u;
 //300 очков всего
 int dir;
 int curscore=0;
-int onesleft=295;
+const int points_at_all=295;
+int onesleft=points_at_all;
 const int he = 31;
 const int wi = 28;
 const int dop=2000;
 const int dcl=10000;
 atomic< int > curtime=0;
 const int cycle=dop+dcl;
-const int wait_ghost=400;
-const int wait_gamer=300;
+
+const int start_wait_ghost=500;
+atomic< int > wait_ghost=500;
+atomic< int > wait_gamer=250;
+atomic< double > ghost_speed_modifier=1.0;
+atomic< double > ghost_sp_mod_inc=0.1;
+atomic< int > round_num=1;
+const double mon_sp_cap_mod=1.1;
+
 const int cherrySleep=40000;
 const int energizerSleep=20000;
 point fi_mon;
@@ -262,3 +270,9 @@ int zeroes[he][wi]={   {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                     {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
                     {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
     };
+
+    void mon_speed_change(){
+        ghost_speed_modifier=double(ghost_speed_modifier)+double(ghost_sp_mod_inc);
+        wait_ghost=start_wait_ghost/ghost_speed_modifier;
+        if(wait_ghost<wait_gamer) wait_ghost=mon_sp_cap_mod*int(wait_gamer);
+    }

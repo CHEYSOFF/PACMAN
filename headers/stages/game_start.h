@@ -12,6 +12,7 @@
 #include <chrono>
 #include <random>
 #include <fstream>
+#include <cmath>
 
 #include "../variables.h"
 #include "game/player.h"
@@ -52,6 +53,8 @@ void var_reset(){
     th_mon=u;
     death=0;
     arr[gam.i][gam.j]=0;
+    
+    
     for( int i=0; i<mo_co+1; i++ ){
         monplaced[i]=0;
     }

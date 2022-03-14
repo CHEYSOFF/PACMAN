@@ -107,7 +107,7 @@ int main(){
         cout<<'\n';
         cout<<flush;
         Sleep(1000);
-
+        // round_num++;
     }
     system("cls");
     leave();

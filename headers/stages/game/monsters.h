@@ -20,7 +20,6 @@
 
 using namespace std;
 
-
 bool valid(point a){
     if(a.i<he && a.i>=0 && a.j<wi && a.j>=0 && arr[a.i][a.j]!=1) return 1;
     else return 0; 

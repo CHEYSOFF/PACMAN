@@ -37,13 +37,33 @@ void cen_out(string s){
 void updateScreen(){
     int i, j;
     
-    for(i=0;i<he+4+3;i++) cout<<UP;
+    for(i=0;i<he+4+3+2;i++) cout<<UP;
 
     cout<<GRA;
     cout<<" +=";
     for(int i=0; i<wi*2-1; i++) cout<<'=';
     cout<<"=+ ";
     cout<<'\n';
+    // string tmp=to_string(wait_gamer)+" "+to_string(start_wait_ghost)+" "+to_string(ghost_speed_modifier)+" "+to_string(wait_ghost);
+    string rn="ROUND NUMBER A";
+    // cen_out(tmp);
+    // cout<<'\n';
+    int mar=margin(rn);
+    cout<<mar_left;
+    for(int i=0;i<mar;i++) cout<<' ';
+    cout<<GRA<<"ROUND NUMBER ";
+    cout<<BLU<<round_num<<'\n';
+
+    cout<<UP;
+    for(int i=0;i<wi*2+mar_left.size()-1;i++) cout<<RIG;
+    cout<<GRA<<" | ";
+    cout<<'\n';
+
+    cout<<" +=";
+    for(int i=0; i<wi*2-1; i++) cout<<'=';
+    cout<<"=+ ";
+    cout<<'\n';
+
     for(i=0;i<he;i++){
 
         cout<<GRA<<mar_left;
