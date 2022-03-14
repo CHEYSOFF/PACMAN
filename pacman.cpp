@@ -62,6 +62,8 @@ int main(){
     fi_mon_start.j=12;
     th_mon_start.i=14;
     th_mon_start.j=13;
+    fo_mon_start.i=14;
+    fo_mon_start.j=14;
 
     hideCursor();
     hideScrollBar();

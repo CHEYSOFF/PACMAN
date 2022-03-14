@@ -51,6 +51,7 @@ void var_reset(){
     fi_mon=u;
     se_mon=u;
     th_mon=u;
+    fo_mon=u;
     death=0;
     arr[gam.i][gam.j]=0;
     

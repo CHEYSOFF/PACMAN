@@ -63,10 +63,11 @@ const int energizerSleep=20000;
 point fi_mon;
 point se_mon;
 point th_mon;
+point fo_mon;
 vector< pair< string, long long > > lbscore;
 int lbsize=10;
 int lives=3;
-const int mo_co=3;
+const int mo_co=4;
 vector< bool > monplaced(mo_co+1, 0);
 int out_le=wi;// для центрирования вывода
 string mar_left=" | ";
@@ -92,6 +93,7 @@ atomic< int > energTime=0;
 point se_mon_start;
 point fi_mon_start;
 point th_mon_start;
+point fo_mon_start;
 atomic< int > energCol=0;
 string energColArr[2]={GRE, RED};
 const int morg=500;
@@ -99,6 +101,7 @@ atomic< int > moncol=0;
 string fi_mon_col[2]={BLU, RED};
 string se_mon_col[2]={BLU, CYA};
 string th_mon_col[2]={BLU, GRE};
+string fo_mon_col[2]={BLU, YEL};
 bool gh_white=0;
 
 

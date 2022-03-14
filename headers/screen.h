@@ -94,6 +94,13 @@ void updateScreen(){
                 outed=1;
                 continue;
             }
+            else if(fo_mon!=u && fo_mon==curpo){
+                cout<<fo_mon_col[moncol];
+                if(gh_white) cout<<GRA;
+                cout<<BOLD<<"@"<<" ";
+                outed=1;
+                continue;
+            }
             else if(gam==curpo){
                 cout<<YEL<<BOLD<<"C"<<" ";
                 outed=1;

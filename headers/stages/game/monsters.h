@@ -107,7 +107,7 @@ point fastest_way(point s, point e){
             // }
             
 
-            if( valid(to) && used[to.i][to.j]==u){
+            if( (to==e || valid(to)) && used[to.i][to.j]==u){
                 used[to.i][to.j]=from;
                 q.push(to);
 
@@ -187,6 +187,150 @@ point fastest_way(point s, point e){
         
     return u;
 }
+
+point secfir_fastest_way(point s, point e){
+    // map< point, int > ways;
+    static std::uniform_int_distribution<int> secfir(0, 1);
+    bool first=secfir(rng);
+    queue< point > q;
+    q.push (s);
+    point tmp_p;
+    tmp_p.i=0;
+    tmp_p.j=0;
+    if(s==e) return tmp_p;
+    
+    vector< vector<point> > used(he, vector< point >(wi, u) );
+
+    point hod[4];
+
+    point tmp;
+
+    tmp.i=-1;
+    tmp.j=0;
+    hod[0]=tmp;
+    // ways[tmp]=0;
+
+    tmp.i=0;
+    tmp.j=1;
+    hod[1]=tmp;
+    // ways[tmp]=1;
+
+    tmp.i=1;
+    tmp.j=0;
+    hod[2]=tmp;
+    // ways[tmp]=2;
+
+    tmp.i=0;
+    tmp.j=-1;
+    hod[3]=tmp;
+    // ways[tmp]=3;
+
+
+    for(;!q.empty();){
+
+        point from=q.front();
+        q.pop();
+
+        for(int kt=0; kt<4;kt++){
+
+            point to=from+hod[kt];
+            to.j+=wi;
+            to.j%=wi;
+            // if( to.i==14 && to.j==-1 ){
+            //     to.j=27;
+            // }
+            // else if( to.i==14 && to.j==28 ){
+            //     to.j=0;
+            // }
+
+            if(to==e && first){
+                first=0;
+                continue;
+            }
+
+            if( (to==e || valid(to)) && used[to.i][to.j]==u){
+                used[to.i][to.j]=from;
+                q.push(to);
+
+                
+
+
+                if(to==e){
+
+                    point nev=to;
+                    for(;;){
+                        
+                        if(nev==u) return u;
+                        
+                        if(used[nev.i][nev.j]==s){
+                            point ans=nev-s;
+                            if(energAct==0){
+                                return(ans); 
+                            }
+                            else{
+                                int hod_nu;/*=(ways[ans]+2)%4;*/
+                                for(int i=0;i<4;i++){
+                                    if(ans==hod[i]){
+                                        hod_nu=i;
+                                        break;
+                                    }
+                                }
+                                hod_nu+=2;
+                                hod_nu%=4;
+                                point next_p=s+hod[hod_nu];
+                                next_p.j+=wi;
+                                next_p.j%=wi;
+                                if(valid(next_p)){
+                                    return hod[hod_nu];
+                                }
+                                else{
+                                    hod_nu++;
+                                    hod_nu%=4;
+                                    next_p=s+hod[hod_nu];
+                                    next_p.j+=wi;
+                                    next_p.j%=wi;
+                                    if(valid(next_p)){
+                                        return hod[hod_nu];
+                                    }
+                                    else{
+                                        hod_nu+=2;
+                                        hod_nu%=4;
+                                        next_p=s+hod[hod_nu];
+                                        next_p.j+=wi;
+                                        next_p.j%=wi;
+                                        if(valid(next_p)){
+                                            return hod[hod_nu];
+                                        }
+                                        else{
+                                            return ans;
+                                        }
+                                    }
+                                }
+                                
+                            }
+                            
+                        }
+
+                        nev=used[nev.i][nev.j];
+                    }
+
+                }
+
+
+
+            }
+
+
+        }
+
+
+
+    }
+
+        
+    return u;
+}
+
 
 void mon_bfs(){
 
@@ -440,6 +584,35 @@ void mon_corner(){
     pacmandeath();
 }
 
+void fo_mon_point_mod(point &a){
+    if(a.i>=he) a.i=he-1;
+    if(a.j>=wi) a.j=wi-1;
+    if(a.i<=0) a.i=1;
+    if(a.j<=0) a.j=1;
+}
+
+void mon_hard(){
+
+    // point half_otr=gam-fo_mon;
+    // point otr=half_otr*2;
+    // point addon;
+    // point destination=fo_mon+(fi_mon+se_mon+th_mon+fo_mon+gam*4)/7;
+    // point destination=fo_mon+otr;
+    // if(destination.i<fo_mon.i) destination.i-=2;
+    // else if(destination.i>fo_mon.i) destination.i+=2;
+    // if(destination.j<fo_mon.j) destination.j-=2;
+    // else if(destination.j>fo_mon.j) destination.j+=2;
+    // fo_mon_point_mod(destination);
+    point mon_dir=secfir_fastest_way( fo_mon, gam );
+    if(mon_dir==u){
+        return;
+    }
+    point newpos=fo_mon+mon_dir;
+    fo_mon=newpos;
+    pacmandeath();
+
+}
+
 void mon_thr(){
     
     int m_l_dir=0;//0 вверх | 1 вправо | 2 вниз | 3 влево
@@ -472,6 +645,14 @@ void mon_thr(){
                 monplaced[3]=1;
             }
             mon_corner();
+        }
+
+        if( curtime >= (cycle)*3 ){
+            if( !monplaced[4] ){
+                fo_mon=fo_mon_start;
+                monplaced[4]=1;
+            }
+            mon_hard();
         }
 
 

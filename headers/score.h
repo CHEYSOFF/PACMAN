@@ -38,7 +38,7 @@ void addScore(point p){
         curscore+=cherryCost;
         arr[p.i][p.j]=0;
     }
-    else if(p==se_mon || p==fi_mon){
+    else if(p==se_mon || p==fi_mon || p==th_mon || p==fo_mon){
         curscore+=20;
     }
 }

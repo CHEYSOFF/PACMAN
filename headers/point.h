@@ -37,6 +37,21 @@ point operator-(point a, point b){
     return tmp;
 }
 
+point operator*(point a, int k){
+    point tmp;
+    tmp.i=a.i*k;
+    tmp.j=a.j*k;
+    return tmp;
+}
+
+
+point operator/(point a, int k){
+    point tmp;
+    tmp.i=a.i/k;
+    tmp.j=a.j/k;
+    return tmp;
+}
+
 bool operator==(point a, point b){
     return (a.i==b.i && a.j==b.j);
 }
