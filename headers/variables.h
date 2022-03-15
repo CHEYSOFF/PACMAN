@@ -53,9 +53,11 @@ const int dcl=10000;
 atomic< int > curtime=0;
 const int cycle=dop+dcl;
 
-const int start_wait_ghost=500;
-atomic< int > wait_ghost=400;
-atomic< int > wait_gamer=250;
+const int wait_ghost_energizer=550;
+const int start_wait_ghost=300;
+// atomic< int > wait_ghost;
+atomic< int > wait_ghost_wo_ener=start_wait_ghost;
+atomic< int > wait_gamer=150;
 atomic< double > ghost_speed_modifier=1.0;
 atomic< double > ghost_sp_mod_inc=0.05;
 atomic< int > round_num=1;
@@ -283,6 +285,6 @@ int zeroes[he][wi]={   {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 
     void mon_speed_change(){
         ghost_speed_modifier=double(ghost_speed_modifier)+double(ghost_sp_mod_inc);
-        wait_ghost=start_wait_ghost/ghost_speed_modifier;
-        if(wait_ghost<wait_gamer) wait_ghost=mon_sp_cap_mod*int(wait_gamer);
+        wait_ghost_wo_ener=start_wait_ghost/ghost_speed_modifier;
+        if(wait_ghost_wo_ener<wait_gamer) wait_ghost_wo_ener=mon_sp_cap_mod*int(wait_gamer);
     }

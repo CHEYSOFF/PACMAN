@@ -620,7 +620,8 @@ void mon_thr(){
         }
 
 
-        Sleep(wait_ghost);
+        if(energAct) Sleep(wait_ghost_energizer);
+        else Sleep(wait_ghost_wo_ener);
         
 
     }
