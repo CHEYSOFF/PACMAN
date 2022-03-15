@@ -65,7 +65,8 @@ const double mon_sp_cap_mod=1.1;
 
 
 const int cherryCost=35;
-const int cherrySleep=40000;
+const int cherrySpawn=30000;
+const int cherrySleep=15000;
 const int energizerSleep=20000;
 point fi_mon;
 point se_mon;

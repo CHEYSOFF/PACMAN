@@ -18,7 +18,7 @@ using namespace std;
 void cherry_spawn(){
     
     while(gameContinue){
-        Sleep(cherrySleep);
+        Sleep(cherrySpawn);
         static std::uniform_int_distribution<int> uidi(1,he-2+1);
         static std::uniform_int_distribution<int> uidj(1,wi-2+1);
         int ib=uidi(rng);
