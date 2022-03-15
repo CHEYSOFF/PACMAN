@@ -109,7 +109,7 @@ void updateScreen(){
             if(!outed){
 
 
-                if(arr[i][j]==0) cout<<GRA<<"."<<" ";
+                if(arr[i][j]==0) cout<<GRA<<" "<<" ";
                 else if(arr[i][j]==1) cout<<PUR<<"H"<<" "; 
                 else if(arr[i][j]==2) cout<<GRE<<"*"<<" ";
                 else if(arr[i][j]==5) cout<<RED<<BOLD<<"6"<<" ";
