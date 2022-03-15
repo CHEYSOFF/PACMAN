@@ -23,6 +23,7 @@ void cherry_spawn(){
         static std::uniform_int_distribution<int> uidj(1,wi-2+1);
         int ib=uidi(rng);
         int jb=uidj(rng);
+        
         for(int i=jb;i<he;i++){
             for(int j=jb;j<wi;j++){
                 if(i>=12 && i<=16 && j>=10 && j<=17) continue;
@@ -32,11 +33,13 @@ void cherry_spawn(){
                     jb=j;
                     i=he;
                     j=wi;
-                    
+                    cherryInd.i=ib;
+                    cherryInd.j=jb;
                 }
             }
         }
         Sleep(cherrySleep);
-        arr[ib][jb]=0;
+        arr[cherryInd.i][cherryInd.j]=0;
+        cherryInd=u;
     }
 }

@@ -53,8 +53,6 @@ point next_point(int dir){
 }
 
 point fastest_way(point s, point e){
-    // map< point, int > ways;
-    
     queue< point > q;
     q.push (s);
     point tmp_p;
@@ -168,10 +166,12 @@ point fastest_way(point s, point e){
     return u;
 }
 
-point secfir_fastest_way(point s, point e){
+point secfir_fastest_way(point s, point e, int way){
     // map< point, int > ways;
-    static std::uniform_int_distribution<int> secfir(0, 1);
-    bool first=secfir(rng);
+    
+    bool first;
+    if(way>=fo_step_period/2) first=1;
+    else first=0;
     queue< point > q;
     q.push (s);
     point tmp_p;
@@ -310,7 +310,6 @@ point secfir_fastest_way(point s, point e){
         
     return u;
 }
-
 
 void mon_bfs(){
 
@@ -564,26 +563,9 @@ void mon_corner(){
     pacmandeath();
 }
 
-void fo_mon_point_mod(point &a){
-    if(a.i>=he) a.i=he-1;
-    if(a.j>=wi) a.j=wi-1;
-    if(a.i<=0) a.i=1;
-    if(a.j<=0) a.j=1;
-}
+void mon_hard(int way){
 
-void mon_hard(){
-
-    // point half_otr=gam-fo_mon;
-    // point otr=half_otr*2;
-    // point addon;
-    // point destination=fo_mon+(fi_mon+se_mon+th_mon+fo_mon+gam*4)/7;
-    // point destination=fo_mon+otr;
-    // if(destination.i<fo_mon.i) destination.i-=2;
-    // else if(destination.i>fo_mon.i) destination.i+=2;
-    // if(destination.j<fo_mon.j) destination.j-=2;
-    // else if(destination.j>fo_mon.j) destination.j+=2;
-    // fo_mon_point_mod(destination);
-    point mon_dir=secfir_fastest_way( fo_mon, gam );
+    point mon_dir=secfir_fastest_way( fo_mon, gam, way );
     if(mon_dir==u){
         return;
     }
@@ -594,7 +576,7 @@ void mon_hard(){
 }
 
 void mon_thr(){
-    
+    int hard_way=0;
     int m_l_dir=0;//0 вверх | 1 вправо | 2 вниз | 3 влево
     while(gameContinue){
         moncol++;
@@ -632,7 +614,9 @@ void mon_thr(){
                 fo_mon=fo_mon_start;
                 monplaced[4]=1;
             }
-            mon_hard();
+            hard_way++;
+            hard_way%=fo_step_period;
+            mon_hard(hard_way);
         }
 
 

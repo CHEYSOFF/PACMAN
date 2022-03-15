@@ -24,12 +24,15 @@ void addScore(point p){
         arr[p.i][p.j]=0;
         onesleft--;
         if(onesleft<=0){
+            
             onesleft=points_at_all;
+            if(cherryInd!=u) onesleft--;
             for(int i=0;i<he;i++){
                 for(int j=0;j<wi;j++){
                     if(!(i==12 && j>=11 && j<=16) ) arr[i][j]=ones[i][j];
                 }
             }
+
             round_num++;
             mon_speed_change();
         }

@@ -34,9 +34,12 @@
 
 using namespace std;
 
+
 mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 point u;
 point hod[4];
+point cherryInd;
+const int fo_step_period=16;
 //300 очков всего
 int dir;
 int tmpdir;

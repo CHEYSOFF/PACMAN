@@ -70,22 +70,20 @@ int main(){
     tmp.i=-1;
     tmp.j=0;
     hod[0]=tmp;
-    // ways[tmp]=0;
 
     tmp.i=0;
     tmp.j=1;
     hod[1]=tmp;
-    // ways[tmp]=1;
 
     tmp.i=1;
     tmp.j=0;
     hod[2]=tmp;
-    // ways[tmp]=2;
 
     tmp.i=0;
     tmp.j=-1;
     hod[3]=tmp;
-    // ways[tmp]=3;
+
+    cherryInd=u;
 
 
     hideCursor();
