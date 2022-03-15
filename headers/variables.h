@@ -36,8 +36,10 @@ using namespace std;
 
 mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 point u;
+point hod[4];
 //300 очков всего
 int dir;
+int tmpdir;
 int curscore=0;
 const int points_at_all=295;
 int onesleft=points_at_all;

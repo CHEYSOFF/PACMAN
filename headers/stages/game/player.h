@@ -22,44 +22,56 @@ using namespace std;
 
 void input_key(){
     while(gameContinue){
-        
+        FlushConsoleInputBuffer(GetStdHandle(STD_INPUT_HANDLE) );
     
         switch(getch()){
                 // case 246:
                 // case 214:
+                case 72:
                 case 87:
                 case 119:
-                    if(arr[gam.i-1][gam.j]!=1){
-                        dir=0;
-                    }
+                    tmpdir=0;
+                    // if(arr[gam.i-1][gam.j]!=1){
+                        
+                        // dir=0;
+                    // }
                     
                     break;
                 // case 219:
                 // case 251:
+                case 80:
                 case 83:
                 case 115:
-                    if(arr[gam.i+1][gam.j]!=1){
-                        dir=2;
-                    }
+                    tmpdir=2;
+                    // if(arr[gam.i+1][gam.j]!=1){
+                        
+                        // dir=2;
+                    // }
                     
                     break;
                 // case 212:
                 // case 244:
                 // case 192:
+                case 75:
                 case 65:
                 case 97:
-                    if( (gam.j>=0 && arr[gam.i][gam.j-1]!=1) || (gam.i==14 && gam.j==0 )  ){
-                        dir=3;
-                    }
+                    tmpdir=3;
+                    // if( (gam.j>=0 && arr[gam.i][gam.j-1]!=1) || (gam.i==14 && gam.j==0 )  ){
+                        
+                        // dir=3;
+                    // }
                     
                     break;
                 // case 194:
                 // case 226:
+                case 77:
                 case 68:
                 case 100:
-                    if( (gam.j+1<wi && arr[gam.i][gam.j+1]!=1) || (gam.i==14 && gam.j==wi-1) ){
-                        dir=1;
-                    }
+                    tmpdir=1;
+                    // if( (gam.j+1<wi && arr[gam.i][gam.j+1]!=1) || (gam.i==14 && gam.j==wi-1) ){
+                        
+                        // dir=1;
+                    // }
                     
                     break;
                 case 27:
@@ -99,118 +111,81 @@ bool cango(point p){
     return false;
 }
 
-void goup(){
-    
-    point p=gam;
-    p.i--;
-
-    p.i+=he;
-    p.j+=wi;
-
-    p.i%=he;
-    p.j%=wi;
-
+bool playerMove(point p){
     if( cango(p) ){
         addScore(p);
         energizer(p);
         gam=p;
         pacmandeath();
-        return;
+        return true;
     }
+    else return false;
 
-
-    
 }
 
-void godown(){
-    point p=gam;
-    p.i++;
+//0 вверх | 1 вправо | 2 вниз | 3 влево
+point pointSide(point tm, int side){
+    point p=tm;
+    p=p+hod[side];
 
     p.i+=he;
     p.j+=wi;
 
     p.i%=he;
     p.j%=wi;
-
-    if(cango(p) ){
-        addScore(p);
-        energizer(p);
-        gam=p;
-        pacmandeath(); 
-        return;
-    }
-
+    return p;
 }
 
-void goleft(){
-    point p=gam;
-    p.j--;
-
-    p.i+=he;
-    p.j+=wi;
-
-    p.i%=he;
-    p.j%=wi;
-
-    if(cango( p ) ){
-        addScore(p);
-        energizer(p);
-        gam=p;
-        pacmandeath();
-        return;
-    }
-    
-
-
-    
+bool goDir(int side){
+    point p=pointSide(gam, side);
+    return playerMove(p);
 }
 
-void goright(){
+// void goup(){
+//     point p=pointSide(gam, 0);
+//     playerMove(p);
+// }
 
-    point p=gam;
-    p.j++;
+// void goright(){
+//     point p=pointSide(gam, 1);
+//     playerMove(p);
+// }
 
-    p.i+=he;
-    p.j+=wi;
+// void godown(){
+//     point p=pointSide(gam, 2);
+//     playerMove(p);
+// }
 
-    p.i%=he;
-    p.j%=wi;
+// void goleft(){
+//     point p=pointSide(gam, 3);
+//     playerMove(p);
+// }
 
-    if(cango( p ) ){
-        addScore(p);
-        energizer(p);
-        gam=p;
-        pacmandeath();
-        return;
-
-
-    }
-
-    
-
-
-    
-}
 
 void character(){
     dir=1; //0 вверх | 1 вправо | 2 вниз | 3 влево
-
+    tmpdir=1;
     while (gameContinue){
         
-        switch(dir){
-            case 0:
-                goup();
-                break;
-            case 2:
-                godown();
-                break;
-            case 3:
-                goleft();
-                break;
-            case 1:
-                goright();
-                break;
+        if(goDir(tmpdir)){
+            dir=tmpdir;
         }
+        else goDir(dir);
+
+        // switch(dir){
+        //     case 0:
+        //         goup();
+        //         break;
+        //     case 2:
+        //         godown();
+        //         break;
+        //     case 3:
+        //         goleft();
+        //         break;
+        //     case 1:
+        //         goright();
+        //         break;
+        // }
 
 
         Sleep(wait_gamer);
