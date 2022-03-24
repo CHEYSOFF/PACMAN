@@ -22,9 +22,25 @@ int margin(string s){
     return (win_wi/pix_char-s.size())/2;
 }
 
+int marggame(string s){
+    return (wi*2-s.size())/2;
+}
+
 void cen_out(string s){
 
     int ot= margin(s);
+    for(int i=0;i<ot;i++){
+        cout<<" ";
+    }
+
+    cout<<s;
+
+
+}
+
+void cen_out_ga(string s){
+
+    int ot= marggame(s);
     for(int i=0;i<ot;i++){
         cout<<" ";
     }
@@ -48,7 +64,7 @@ void updateScreen(){
     string rn="ROUND NUMBER A";
     // cen_out(tmp);
     // cout<<'\n';
-    int mar=margin(rn);
+    int mar=marggame(rn);
     cout<<mar_left;
     for(int i=0;i<mar;i++) cout<<' ';
     cout<<GRA<<"ROUND NUMBER ";
@@ -135,24 +151,31 @@ void updateScreen(){
     cout<<GRA<<mar_left;
     cout<<YEL;
     string ys="YOUR SCORE="+to_string(curscore);
-    cen_out(ys);
+    cen_out_ga(ys);
     cout<<'\n';
     cout<<GRA<<mar_left;
     string ll="LIVES LEFT: "+to_string(lives);
     cout<<RED;
-    cen_out(ll);
+    cen_out_ga(ll);
 
     cout<<'\n';
     
+    for(int i=0;i<2*wi;i++){
+        cout<<" ";
+    }
+    cout<<UP;
+    cout<<'\n';
+
     cout<<GRA<<mar_left;
     
     
+
     if(energAct==1){
         
         string nrgtime=to_string(energTime/1000);
         string eia="ENERGIZER IS ACTIVE "+nrgtime;
         cout<<energColArr[energCol];
-        cen_out(eia);
+        cen_out_ga(eia);
         // for(int i=0;i<4;i++) cout<<' ';// закрашивание
         // cout<<'\n';
     }

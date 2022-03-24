@@ -62,7 +62,7 @@ atomic< double > ghost_speed_modifier=1.0;
 atomic< double > ghost_sp_mod_inc=0.05;
 atomic< int > round_num=1;
 const double mon_sp_cap_mod=1.1;
-
+//40x61
 
 const int cherryCost=35;
 const int cherrySpawn=30000;
@@ -81,9 +81,10 @@ int out_le=wi;// для центрирования вывода
 string mar_left=" | ";
 atomic< bool > gameContinue = true;
 atomic< int > death;//1 съеден монстром || -1 лив || 0 жив
-int win_wi=460;
-int win_he=700;
 int pix_char=8;
+int win_wi=510;
+int win_he=800;
+
 point gam;
 int char_he=7;
 int char_wi=5;

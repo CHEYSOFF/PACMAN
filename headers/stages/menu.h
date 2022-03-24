@@ -40,17 +40,19 @@ void letters_print(){
             else for(int tt=0;tt<x_ch;tt++) www+=" ";
         }
         cout<<let_col[col_k%4];
+        string tm="";
         for(int kkk=0; kkk<y_ch;kkk++){
-            for(int j=0;j<23;j++) cout<<" ";
-            cout<<www;
+            // for(int j=0;j<23;j++) cout<<" ";
+            // cout<<www;
+            cen_out(www);
             cout<<'\n';
         }
         
         
     }
-
+    
     for(int i=0;i<char_he;i++){
-
+        cout<<" ";
         string aaa="";
         for(int j=0;j<char_wi;j++){
             if(char_a[i][j]==1){
@@ -79,8 +81,11 @@ void letters_print(){
         }
         
         for(int kkk=0; kkk<y_ch;kkk++){
+            string help=aaa+"   "+sss+"   "+ddd;
             cout<<let_col[(col_k+1)%4];
-            for(int j=0;j<11;j++) cout<<" ";
+            int ots=margin(help);
+            for(int i=0;i<ots;i++) cout<<" ";
+            // for(int j=0;j<11;j++) cout<<" ";
             cout<<aaa;
             cout<<"  ";
             cout<<let_col[(col_k+2)%4];
