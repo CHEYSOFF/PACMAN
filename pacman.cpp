@@ -120,13 +120,13 @@ int main(){
         string yd="YOU DIED";
         cout<<GRA<<mar_left;
         cout<<RED;
-        cen_out(yd);
+        cen_out_ga(yd);
         cout<<"     ";//чтобы закрыть предыдущий текст :(
         cout<<'\n';
         cout<<GRA<<mar_left;
         cout<<RED;
         string ll="LIVES LEFT: "+to_string(lives);
-        cen_out(ll);
+        cen_out_ga(ll);
         cout<<'\n';
         cout<<flush;
         Sleep(1000);

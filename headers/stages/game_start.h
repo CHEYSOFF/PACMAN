@@ -91,7 +91,7 @@ void setWindowSize(){
     ShowScrollBar(hwnd, SB_BOTH, 0);
     RECT ConsoleRect;
     GetWindowRect(hwnd, &ConsoleRect);
-    MoveWindow(hwnd, ConsoleRect.left, ConsoleRect.top, win_wi, win_he, TRUE);
+    MoveWindow(hwnd, ConsoleRect.left, ConsoleRect.top, win_width, win_height, TRUE);
     //
 }
 

@@ -19,7 +19,7 @@
 using namespace std;
 
 int margin(string s){
-    return (win_wi/pix_char-s.size())/2;
+    return (win_width/pix_char-s.size())/2;
 }
 
 int marggame(string s){
@@ -150,14 +150,16 @@ void updateScreen(){
     cout<<'\n';
     cout<<GRA<<mar_left;
     cout<<YEL;
-    string ys="YOUR SCORE="+to_string(curscore);
+    string ys="YOUR SCORE: "+to_string(curscore);
     cen_out_ga(ys);
+    cout<<"     ";//чтобы закрыть предыдущий текст :(
     cout<<'\n';
     cout<<GRA<<mar_left;
     string ll="LIVES LEFT: "+to_string(lives);
+    
     cout<<RED;
     cen_out_ga(ll);
-
+    cout<<"     ";//чтобы закрыть предыдущий текст :(
     cout<<'\n';
     
     for(int i=0;i<2*wi;i++){
