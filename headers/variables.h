@@ -82,8 +82,8 @@ string mar_left=" | ";
 atomic< bool > gameContinue = true;
 atomic< int > death;//1 съеден монстром || -1 лив || 0 жив
 int pix_char=8;
-int win_wi=510;
-int win_he=800;
+int win_width=510;
+int win_height=800;
 
 point gam;
 int char_he=7;
